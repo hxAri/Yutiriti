@@ -1,6 +1,4 @@
 
-[project]
-requires-python = ">=3.10.12"
-
 [tool.isort]
-src_paths = [ "src/yutiriti", "test" ]
+profile = "black"
+src_paths = [ "src/requests", "test" ]
