@@ -35,20 +35,33 @@ from yutiriti.file import File
 from yutiriti.json import JSON, JSONError
 from yutiriti.object import Object
 from yutiriti.readonly import Readonly
-from yutiriti.request import Cookies, Headers, Request, RequestRequired, Response, Session
-from yutiriti.string import ASCIIL, ASCIIU, b64decode, b64encode, Binary, String
+from yutiriti.request import (
+	Cookies, 
+	Headers, 
+	Request, 
+	RequestRequired, 
+	Response, 
+	Session 
+)
+from yutiriti.string import (
+	ASCIIL, 
+	ASCIIU, 
+	b64decode, 
+	b64encode, 
+	Binary, 
+	String 
+)
+from yutiriti.tester import Tester
 from yutiriti.text import Text
 from yutiriti.thread import Thread
-from yutiriti.tree import END_LINE, ITP, MID_LINE, SPC_LINE, STR_LINE, tree
+from yutiriti.tree import (
+	END_LINE, 
+	ITP, 
+	MID_LINE, 
+	SPC_LINE, 
+	STR_LINE, 
+	tree
+)
 from yutiriti.typing import Typing
-from yutiriti.yutiriti import Yutiriti
-
-
-#[yutiriti.puts( Any value )]: None
-def puts( value:any=None ) -> None:
-
-	"""
-	"""
-
-	print( Yutiriti.colorize( str, value if isinstance( value, str ) else repr( value ) ) )
+from yutiriti.yutiriti import puts, Yutiriti
 
