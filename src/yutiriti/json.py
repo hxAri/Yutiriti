@@ -19,47 +19,47 @@
 
 
 from json import (
-	dumps,
-	JSONDecodeError as JSONError, 
-	loads, 
+    dumps,
+    JSONDecodeError as JSONError, 
+    loads, 
 )
 
 from yutiriti.common import typedef
 
 
-#[yutiriti.utility.json.JSON]
+#[yutiriti.json.JSON]
 class JSON:
-	
-	#[Json.decode( Str string, Any *args, Any **kwargs )]
-	@staticmethod
-	def decode( string, *args, **kwargs ):
-		return( loads( string, *args, **kwargs ) )
-		
-	#[Json.encode( Any values, Any *args, Any **kwargs )]
-	@staticmethod
-	def encode( values, *args, **kwargs ):
-		if typedef( values, "Object" ):
-			return values.json()
-		kwargs['indent'] = kwargs.pop( "indent", 4 )
-		return( dumps( values, *args, **kwargs ) )
-		
-	#[Json.isSerializable( Any values )]
-	@staticmethod
-	def isSerializable( values ):
-		
-		"""
-		Return if value is serializable.
-		
-		:params Any values
-		
-		:return Bool
-		"""
-		
-		try:
-			JSON.encode( values )
-		except OverflowError:
-			return( False )
-		except TypeError:
-			return( False )
-		return( True )
-	
+    
+    #[Json.decode( Str string, Any *args, Any **kwargs )]
+    @staticmethod
+    def decode( string, *args, **kwargs ):
+        return( loads( string, *args, **kwargs ) )
+        
+    #[Json.encode( Any values, Any *args, Any **kwargs )]
+    @staticmethod
+    def encode( values, *args, **kwargs ):
+        if typedef( values, "Object" ):
+            return values.json()
+        kwargs['indent'] = kwargs.pop( "indent", 4 )
+        return( dumps( values, *args, **kwargs ) )
+        
+    #[Json.isSerializable( Any values )]
+    @staticmethod
+    def isSerializable( values ):
+        
+        """
+        Return if value is serializable.
+        
+        :params Any values
+        
+        :return Bool
+        """
+        
+        try:
+            JSON.encode( values )
+        except OverflowError:
+            return( False )
+        except TypeError:
+            return( False )
+        return( True )
+    

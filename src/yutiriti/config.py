@@ -24,13 +24,13 @@ AUTHOR_EMAIL:str = "hxari@proton.me"
 
 # Another Authors and Helpers.
 AUTHORS:list[dict[str:str]] = [
-	{
-		"name": "Ari Setiawan",
-		"email": "hxari@proton.me",
-		"section": "Yūtiriti Creator and Developer",
-		"github": "https://github.com/hxAri",
-		"linkedin": "https://linkedin.com/in/hxAri"
-	}
+    {
+        "name": "Ari Setiawan",
+        "email": "hxari@proton.me",
+        "section": "Yūtiriti Creator and Developer",
+        "github": "https://github.com/hxAri",
+        "linkedin": "https://linkedin.com/in/hxAri"
+    }
 ]
 
 # Yūtiriti DESCRIPTION.
@@ -40,8 +40,8 @@ DESCRIPTION:str = ""
 LICENSE:str = "GNU General Public License v3"
 LICENSE_URL:str = "https://www.gnu.org/licenses/gpl-3.0.html"
 LICENSE_DOC:list[str] = [
-	"All Yūtiriti source code is licensed under the GNU General Public License v3.",
-	"Please see the \"LICENSE\" document for more details."
+    "All Yūtiriti source code is licensed under the GNU General Public License v3.",
+    "Please see the \"LICENSE\" document for more details."
 ]
 
 # Yūtiriti Reporistory.

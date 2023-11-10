@@ -4,27 +4,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ...
 *.egg-info
 dist
+dist/*
+build
+build/*
 
-# Kanashī Directory and Another Kanashī Files.
-backup/*
-onsaved/*
+# Yutiriti Directory and Another Yutiriti Files.
 requests/*
-schemas*
-schemas/*
-testing*
-testing/*
-wordlist*
-wordlist/*
-*.html
-*.webp
-*.json
-*.jpeg
-*.jpg
-*.png
-*.mp3
-*.mp4
 
 # Visual Studio Code
 .vscode

@@ -22,45 +22,45 @@ from yutiriti.common import classmethods, droper, typedef, typeof
 from yutiriti.config import *
 from yutiriti.cookie import Cookie
 from yutiriti.error import ( 
-	Alert, 
-	AuthError, 
-	Error, 
-	ReportError, 
-	RequestAuthError, 
-	RequestDownloadError, 
-	RequestError, 
-	Throwable 
+    Alert, 
+    AuthError, 
+    Error, 
+    ReportError, 
+    RequestAuthError, 
+    RequestDownloadError, 
+    RequestError, 
+    Throwable 
 )
 from yutiriti.file import File
 from yutiriti.json import JSON, JSONError
 from yutiriti.object import Object
 from yutiriti.readonly import Readonly
 from yutiriti.request import (
-	Cookies, 
-	Headers, 
-	Request, 
-	RequestRequired, 
-	Response, 
-	Session 
+    Cookies, 
+    Headers, 
+    Request, 
+    RequestRequired, 
+    Response, 
+    Session 
 )
 from yutiriti.string import (
-	ASCIIL, 
-	ASCIIU, 
-	b64decode, 
-	b64encode, 
-	Binary, 
-	String 
+    ASCIIL, 
+    ASCIIU, 
+    b64decode, 
+    b64encode, 
+    Binary, 
+    String 
 )
 from yutiriti.tester import Tester
 from yutiriti.text import Text
 from yutiriti.thread import Thread
 from yutiriti.tree import (
-	END_LINE, 
-	ITP, 
-	MID_LINE, 
-	SPC_LINE, 
-	STR_LINE, 
-	tree
+    END_LINE, 
+    ITP, 
+    MID_LINE, 
+    SPC_LINE, 
+    STR_LINE, 
+    tree
 )
 from yutiriti.typing import Typing
 from yutiriti.yutiriti import puts, Yutiriti

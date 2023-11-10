@@ -21,17 +21,17 @@
 from typing import final
 
 
-#[yutiriti.utility.text.Text]
+#[yutiriti.text.Text]
 @final
 class Text:
 
-	#[Text.fromSnakeToCamel( Str string )]: Str
-	@staticmethod
-	def fromSnakeToCamel( string:str ) -> str:
-		parts = string.split( "\x5f" )
-		return "{}{}".format( parts[0], "".join( part.capitalize() for part in parts[1:] ) )
+    #[Text.fromSnakeToCamel( Str string )]: Str
+    @staticmethod
+    def fromSnakeToCamel( string:str ) -> str:
+        parts = string.split( "\x5f" )
+        return "{}{}".format( parts[0], "".join( part.capitalize() for part in parts[1:] ) )
 
-	#[Text.fromSnakeToTitle( Str string )]: Str
-	@staticmethod
-	def fromSnakeToTitle( string:str ) -> str: return "\x20".join([ part.capitalize() for part in string.split( "\x5f" ) ])
-	
+    #[Text.fromSnakeToTitle( Str string )]: Str
+    @staticmethod
+    def fromSnakeToTitle( string:str ) -> str: return "\x20".join([ part.capitalize() for part in string.split( "\x5f" ) ])
+    

@@ -20,34 +20,34 @@
 
 #[yutiriti.error.Throwable]
 class Throwable( Exception ):
-	
-	#[Throwable( String message, Int code, Context throw, BaseException prev, List group, Function|Method callback, **data )]: None
-	def __init__( self, message, code=0, throw=None, prev=None, group=[], callback=None, **data ) -> None:
-		
-		# Exception message.
-		self.message = message
-		
-		# Exception code.
-		self.code = code
-		
-		# Exception thrown.
-		self.throw = throw
-		
-		# Exception previous.
-		self.prev = prev
-		
-		# Sxception groups.
-		self.group = group
-		
-		# Exception callback.
-		self.callback = callback
-		
-		# Exception data passed.
-		self.data = data
-		
-		# Call parent constructor.
-		super().__init__( message, code )
-	
+    
+    #[Throwable( String message, Int code, Context throw, BaseException prev, List group, Function|Method callback, **data )]: None
+    def __init__( self, message, code=0, throw=None, prev=None, group=[], callback=None, **data ) -> None:
+        
+        # Exception message.
+        self.message = message
+        
+        # Exception code.
+        self.code = code
+        
+        # Exception thrown.
+        self.throw = throw
+        
+        # Exception previous.
+        self.prev = prev
+        
+        # Sxception groups.
+        self.group = group
+        
+        # Exception callback.
+        self.callback = callback
+        
+        # Exception data passed.
+        self.data = data
+        
+        # Call parent constructor.
+        super().__init__( message, code )
+    
 
 #[yutiriti.error.Alert]
 class Alert( Throwable, Warning ): ...

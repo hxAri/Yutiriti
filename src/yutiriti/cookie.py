@@ -26,70 +26,70 @@ from yutiriti.string import String
 
 #[yutiriti.utililty.cookie.Cookie]
 class Cookie:
-	
-	#[Cookie.parse( String raw )]
-	@staticmethod
-	def parse( raw ):
-		expires = findall( r"expires\=([^\;]+)", raw )
-		for expire in expires:
-			raw = raw.replace( expire, String.bin2hex( expire ) )
-		raw = raw.split( ", " )
-		jar = []
-		for item in raw:
-			cookie = {
-				"name": None,
-				"value": None,
-				"rest": {
-					"HttpOnly": None
-				}
-			}
-			attribute = item.split( "; " )
-			for i in range( len( attribute ) ):
-				attr = attribute[i].split( "=" )
-				if  i == 0:
-					cookie['name'] = attr[0]
-					cookie['value'] = attr[1]
-				else:
-					attrName = attr[0].lower()
-					match attrName:
-						case "secure":
-							cookie['secure'] = True
-						case "expires":
-							cookie['expires'] = String.hex2bin( attr[1] )
-						case "httponly":
-							cookie['rest']['HttpOnly'] = True
-						case "samesite":
-							cookie['rest']['SameSite'] = attr[1]
-						case _:
-							try:
-								cookie[attrName] = attr[1]
-							except IndexError:
-								pass
-			jar.append( cookie )
-		return jar
-	
-	#[Cookie.set( requests.cookie.RequestCookieJar cookies, String key, String value )]: None
-	def set( cookies, key, value, domain="", path="/" ):
-		for cookie in cookies:
-			if  cookie.name == key:
-				cookie.path = path
-				cookie.value = value
-				cookie.domain = domain
-				return
-		cookies.set( key, value, domain=domain, path=path )
-	
-	#[Cookie.simple( String raw )]: Dict
-	@staticmethod
-	def simple( raw ):
-		cookie = SimpleCookie()
-		cookie.load( raw )
-		parsed = {}
-		for key, morsel in cookie.items():
-			parsed[key] = morsel.value
-		return parsed
-	
-	#[Cookie.string( RequestsCookieJar cookies )]: String
-	@staticmethod
-	def string( cookies ):
-		return "\x3b\x20".join([ f"{key}={val}" for key, val in cookies.items() ])
-	
+    
+    #[Cookie.parse( String raw )]
+    @staticmethod
+    def parse( raw ):
+        expires = findall( r"expires\=([^\;]+)", raw )
+        for expire in expires:
+            raw = raw.replace( expire, String.bin2hex( expire ) )
+        raw = raw.split( ", " )
+        jar = []
+        for item in raw:
+            cookie = {
+                "name": None,
+                "value": None,
+                "rest": {
+                    "HttpOnly": None
+                }
+            }
+            attribute = item.split( "; " )
+            for i in range( len( attribute ) ):
+                attr = attribute[i].split( "=" )
+                if  i == 0:
+                    cookie['name'] = attr[0]
+                    cookie['value'] = attr[1]
+                else:
+                    attrName = attr[0].lower()
+                    match attrName:
+                        case "secure":
+                            cookie['secure'] = True
+                        case "expires":
+                            cookie['expires'] = String.hex2bin( attr[1] )
+                        case "httponly":
+                            cookie['rest']['HttpOnly'] = True
+                        case "samesite":
+                            cookie['rest']['SameSite'] = attr[1]
+                        case _:
+                            try:
+                                cookie[attrName] = attr[1]
+                            except IndexError:
+                                pass
+            jar.append( cookie )
+        return jar
+    
+    #[Cookie.set( requests.cookie.RequestCookieJar cookies, String key, String value )]: None
+    def set( cookies, key, value, domain="", path="/" ):
+        for cookie in cookies:
+            if  cookie.name == key:
+                cookie.path = path
+                cookie.value = value
+                cookie.domain = domain
+                return
+        cookies.set( key, value, domain=domain, path=path )
+    
+    #[Cookie.simple( String raw )]: Dict
+    @staticmethod
+    def simple( raw ):
+        cookie = SimpleCookie()
+        cookie.load( raw )
+        parsed = {}
+        for key, morsel in cookie.items():
+            parsed[key] = morsel.value
+        return parsed
+    
+    #[Cookie.string( RequestsCookieJar cookies )]: String
+    @staticmethod
+    def string( cookies ):
+        return "\x3b\x20".join([ f"{key}={val}" for key, val in cookies.items() ])
+    
