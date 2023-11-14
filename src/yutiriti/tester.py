@@ -54,10 +54,12 @@ class Tester( Readonly ):
 
         count = 1
         passed = []
+        yutiriti = Yutiriti()
+        yutiriti.output( Tester.testing, "Testing" )
         instance = type( self )
         methods = instance.__dict__
         for method in list( methods.keys() ):
-            string = Yutiriti.colorize( self, "{}Testing case {}".format( "\x20" * 6, count ) )
+            string = yutiriti.colorize( "{}Testing case {}".format( "\x20" * 6, count ) )
             if methods[method] is Tester.testing:
                 continue
             elif not callable( methods[method] ):
@@ -80,7 +82,7 @@ class Tester( Readonly ):
                 thrown = thread.getExcept()
                 if thrown is not None:
                     print( "\x20\x1b[1;31mFailed", end="" )
-                    print( Yutiriti.colorize( self, "\x20{} {}".format( typeof( thread.getExcept() ), thread.getExcept() ) ) )
+                    print( yutiriti.colorize( "\x20{} {}".format( typeof( thread.getExcept() ), thread.getExcept() ) ) )
                     passed.append( False )
                 else:
                     print( "\x20\x1b[1;32mSuccess" )
