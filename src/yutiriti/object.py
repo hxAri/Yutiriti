@@ -229,11 +229,11 @@ class Object:
     
     #[Object.__setattr__( Str name, Any value )]: None
     @final
-    def __setattr__( self, name, value ) -> None: self.set({ name: value })
+    def __setattr__( self, name, value ) -> None: self.set({ str( name ): value })
 
     #[Object.__setitem__( Str key, Any value )]: None
     @final
-    def __setitem__( self, key, value ) -> None: self.set({ key: value })
+    def __setitem__( self, key, value ) -> None: self.set({ str( key ): value })
 
     #[Object.__str__()]: Str
     @final

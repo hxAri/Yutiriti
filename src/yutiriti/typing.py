@@ -30,17 +30,25 @@ from yutiriti.readonly import Readonly
 class Typing( Object ):
 
     """
-    The Typing class has almost the same way of working as the Object class
-    from Yutiriti, but Typing will only forward the items returned by the __items__
-    method to its parent class, its Object from Yutiriti, the aim is to avoid errors
-    when checking response data and so on because, Yutiriti treats dictionaries and also
-    lists as objects will be very confusing considering that Instagram usually provides
-    a fairly large response to be processed and, when the JSON response is passed to a
-    class that extends the Typing class it will only take and also set the value that
-    was returned by the previous __items__ method however, we can also set incompatible
-    items from outside the class or inside except the instance.
+    The Typing class works in almost the same way as the
+    Object class from Yutiriti, but Typing will only pass
+    items returned by the __items__ method to its parent
+    class, namely Object from Yutiriti, the aim is to avoid
+    errors when checking response data and so on because
+    Yutiriti treats dictionaries.
+    
+    And also lists as objects, and for example it can be very
+    confusing when it comes to managing response data as
+    Instagram usually provides quite large responses to process and,
+    when the JSON response is passed to a class that extends the
+    Typing class it will only take time and also set the value
+    returned by previous __items__ method, but we can also set
+    incompatible items from outside the class or from inside except
+    the instance, and this is not always intended for things like
+    those previously mentioned.
 
-    Apart from that, Typing also normalizes strings to int values ​​if the value only contains numbers.
+    Apart from that, Typing also normalizes strings to int values
+    if the value only contains numbers.
     """
 
     #[Typing( Dict|List|Object data, Object parent )]: None
