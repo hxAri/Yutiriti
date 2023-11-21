@@ -18,64 +18,68 @@
 #
 
 
-from typing import final, TypeVar
+from typing import final, Generic, MutableMapping, overload, TypeVar
 
 from yutiriti.error import ReportError
 from yutiriti.readonly import Readonly
 from yutiriti.json import JSON
 from yutiriti.common import typeof
 
+
+Key = TypeVar( "Key" )
+Value = TypeVar( "Value" )
 Object = TypeVar( "Object" )
 ObjectBuilder = TypeVar( "ObjectBuilder" )
-
 
 #[yutiriti.object.Object]
 class Object:
     
-    #[Object( Dict|Object data, Any parent )]: None
-    def __init__( self, data:dict|Object={}, parent:any=None ) -> None:
+    #[Object( Dict|Object data )]: None
+    def __init__( self, data:dict|Object={} ) -> None:
 
         """
         Construct method of class Object.
 
-        :params Dict|List|Object data
+        :params Dict<Key, Value>|Object data
         :params Any parent
 
         :return None
         """
 
-        self.__dict__['__parent__'] = parent
         self.__dict__['__index__'] = 0
         self.__dict__['__data__'] = {}
-        self.set( data )
-    
-    #[Object.__builder__( Object parent, Dict|Object data )]: ObjectBuilder
+        self.__set__( data )
+
+    #[Object.__builder__( Object parent, Dict<Key, Value>|Object data )]: ObjectBuilder
     @final
     @staticmethod
-    def __builder__( parent:object, data:dict|Object ) -> ObjectBuilder:
+    def __builder__( parent:Object, data:dict|Object ) -> ObjectBuilder:
 
         """
-        Object builder for child
+        Object builder for child, 
 
         :params Object parent
-        :params Dict<Str, Str> data
+        :params Dict<Key, Value> data
 
         :return Object
         """
 
-        class ObjectBuilder( parent ):
-            def __init__( self, data:dict ) -> None:
+        #[Object.__builder__$.ObjectBuilder]
+        class ObjectBuilder( parent, Generic[Key, Value], MutableMapping[Key, Value] ):
+
+            #[ObjectBuilder( Dict<Key, Value>|Object data )]: None
+            def __init__( self, data:dict|Object ) -> None:
                 Object.__init__( self, data )
+            
         return ObjectBuilder( data )
-
-    #[Object.__contains__( Str name )]: Bool
+    
+    #[Object.__contains__( Key name )]: Bool
     @final
-    def __contains__( self, name ) -> bool: return f"{name}" in self.__data__
+    def __contains__( self, name:Key ) -> bool: return name in self.__data__
 
-    #[Object.__delattr__( Int|Str key )]: None
+    #[Object.__delattr__( Key key )]: None
     @final
-    def __delattr__( self, key:int|str ) -> None:
-        key = str( key )
+    def __delattr__( self, key:Key ) -> None:
         if key in self.__dict__:
             if key != "__data__" and \
                 key != "__index__" and \
@@ -84,10 +88,9 @@ class Object:
         elif key in self.__dict__['__data__']:
             del self.__dict__['__data__'][key]
     
-    #[Object.__delitem__( Int|Str index )]: None
+    #[Object.__delitem__( Key index )]: None
     @final
-    def __delitem__( self, index:int|str ) -> None:
-        index = str( index )
+    def __delitem__( self, index:Key ) -> None:
         if index in self.__dict__['__data__']:
             del self.__dict__['__data__'][index]
         elif index in self.__dict__:
@@ -96,19 +99,18 @@ class Object:
                 index != "__parent__":
                 del self.__dict__[index]
     
-    #[Object.__getattr__( self, name )]: Any
+    #[Object.__getattr__( Key name )]: Any
     @final
-    def __getattr__( self, name ):
-        name = str( name )
+    def __getattr__( self, name:Key ) -> any:
         if name in self.__dict__:
             return self.__dict__[name]
         elif name in self.__dict__['__data__']:
             return self.__dict__['__data__'][name]
         raise AttributeError( "\"{}\" object has no attribute \"{}\"".format( typeof( self ), name ) )
     
-    #[Object.__getitem__( Str key )]: Any
+    #[Object.__getitem__( Key key )]: Any
     @final
-    def __getitem__( self, key ) -> any:
+    def __getitem__( self, key:Key ) -> any:
         if key in self.__dict__['__data__']:
             return self.__dict__['__data__'][key]
         if key in self.__dict__:
@@ -118,33 +120,40 @@ class Object:
     #[Object.__iter__()]: Object
     @final
     def __iter__( self ) -> Object: return self
-    
-    #[Object.__json__( Dict|List data )]: Dict
+
+    #[Object.__json__( Any *args, Any **kwargs  )]: Str
     @final
-    def __json__( self, data:dict|list=None ) -> dict:
-        if data == None:
-            data = self.dict()
-        match type( data ):
-            case "dict":
-                for key in data:
-                    match type( data[key] ).__name__:
-                        case "dict" | "list":
-                            data[key] = self.__json__( data[key] )
-                        case _:
-                            if not JSON.isSerializable( data[key] ):
-                                data[key] = self.__str( data[key] )
-            case "list":
-                for idx in range( len( data ) ):
-                    if isinstance( data[idx], ( dict, list ) ):
-                        data[idx] = self.__json__( data[idx] )
-                    else:
-                        if not JSON.isSerializable( data[idx] ):
-                            data[idx] = self.__str( data[idx] )
-        return data
+    def __json__( self, *args:any, **kwargs:any ) -> str:
+
+        #[Object.__json__$.iterator( Dict<key, Value>|List<Value> data )]: Dict
+        def iterator( data:dict|list ) -> dict:
+            match type( data ):
+                case "dict":
+                    for key in data:
+                        match type( data[key] ).__name__:
+                            case "dict" | "list":
+                                data[key] = self.__json__( data[key] )
+                            case _:
+                                if not JSON.isSerializable( data[key] ):
+                                    data[key] = self.__str( data[key] )
+                case "list":
+                    for idx in range( len( data ) ):
+                        if isinstance( data[idx], ( dict, list ) ):
+                            data[idx] = self.__json__( data[idx] )
+                        else:
+                            if not JSON.isSerializable( data[idx] ):
+                                data[idx] = self.__str( data[idx] )
+            return data
+        
+        return JSON.encode( iterator( self.__props__() ), *args, **kwargs )
     
     #[Object.__len__()]: Int
     @final
     def __len__( self ) -> int: return len( self.__dict__['__data__'] )
+
+    #[Object.__keys__()]: List<Key>
+    @final
+    def __keys__( self ) -> list[Key]: return list( self.__dict__['__data__'].keys() )
     
     #[Object.__next__()]: Any
     @final
@@ -153,23 +162,43 @@ class Object:
         # Get current index iteration.
         index = self.__index__
         
-        # Get object length.
-        length = len( self )
+        keys = self.__keys__()
+        length = len( keys )
+
         try:
             if index < length:
                 self.__index__ += 1
-                return self[self.keys( index )]
+                return self[keys[index]]
         except IndexError:
             pass
         raise StopIteration
     
-    #[Object.__ref__()]: None
+    #[Object.__props__()]: Dict<Key, Value>
     @final
-    def __ref__( self ) -> None:
-        if "__parent__" in self.__dict__ and self.__dict__['__parent__'] is not None:
-            for key in self.keys():
-                self.__dict__['__parent__'].__dict__[key] = self.__dict__['__data__'][key]
-        
+    def __props__( self ) -> dict:
+
+        """
+        Return Dictionary of Object
+
+        :return Dict<Key, Value>
+        """
+
+        data = {}
+        copy = self.__dict__['__data__']
+        for key in copy.keys():
+            if isinstance( copy[key], Object ):
+                data[key] = copy[key].__props__()
+            elif isinstance( copy[key], list ):
+                data[key] = []
+                for item in copy[key]:
+                    if isinstance( item, Object ):
+                        data[key].append( item.__props__() )
+                    else:
+                        data[key].append( item )
+            else:
+                data[key] = copy[key]
+        return data
+    
     #[Object.__repr__()]: Str
     @final
     def __repr__( self ) -> str:
@@ -180,9 +209,14 @@ class Object:
         :return Str
         """
 
-        def represent( data:dict|list|Object, indent=4 ) -> str:
+        #[Object.__repr__$.represent( Dict<Key, Value>|List<Value>|Object data, Int indent )]: Str
+        def represent( data:dict|list|Object, indent:int=4 ) -> str:
+
+            #[Object.__repr__$.represent$.normalize( Str string )]: Str
             def normalize( string:str ) -> str: return string.replace( "\"", "\\\"" )
-            def wrapper( data:dict|list|Object, indent=4 ) -> str:
+
+            #[Object.__repr__$.represent$.wrapper( Dict<Key, Value>|List<Value>|Object data, Int indent )]: Str
+            def wrapper( data:dict|list|Object, indent:int=4 ) -> str:
                 values = []
                 length = len( data )
                 spaces = "\x20" * indent
@@ -225,99 +259,17 @@ class Object:
                 return "{}(\n{}{}\n{})".format( typeof( data ), "\x20" * indent, wrapper( data, indent=indent ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
             else:
                 return "{}(\n{})".format( typeof( data ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
+        
         return represent( self, indent=4 )
     
-    #[Object.__setattr__( Str name, Any value )]: None
+    #[Object.__set__( Dict<Key, Value>|Object data )]: None
     @final
-    def __setattr__( self, name, value ) -> None: self.set({ str( name ): value })
-
-    #[Object.__setitem__( Str key, Any value )]: None
-    @final
-    def __setitem__( self, key, value ) -> None: self.set({ str( key ): value })
-
-    #[Object.__str__()]: Str
-    @final
-    def __str__( self ) -> str: return self.json()
-    
-    #[Object.copy()]: Object
-    @final
-    def copy( self ) -> Object: return self.__builder__( type( self ), self.dict() )
-
-    #[Object.delt( Int|Str index )]: None
-    @final
-    def delt( self, index:int|str ) -> None: self.__delitem__( index )
-    
-    #[Object.dict()]: Dict[str:any]
-    @final
-    def dict( self ) -> dict[str:any]:
-
-        """
-        Return Dictionary of Object
-
-        :return Dict
-        """
-
-        data = {}
-        copy = self.__dict__['__data__']
-        for key in copy.keys():
-            if isinstance( copy[key], Object ):
-                data[key] = copy[key].dict()
-            elif isinstance( copy[key], list ):
-                data[key] = []
-                for item in copy[key]:
-                    if isinstance( item, Object ):
-                        data[key].append( item.dict() )
-                    else:
-                        data[key].append( item )
-            else:
-                data[key] = copy[key]
-        return data
-    
-    #[Object.dump()]: Str
-    @final
-    def dump( self ) -> str: return self.__repr__()
-
-    #[Object.empty()]: Bool
-    @final
-    def empty( self ) -> bool: return self.__len__() == 0
-    
-    #[Object.json( Any *args, Any **kwargs )]: Str
-    @final
-    def json( self, *args, **kwargs ) -> str: return JSON.encode( self.__json__( self.dict() ), *args, **kwargs )
-    
-    #[Object.isset( Str key )]: Bool
-    @final
-    def isset( self, key ) -> bool: return self.__contains__( key )
-    
-    #[Object.idxs()]: List<Int>
-    @final
-    def idxs( self ) -> list[int]: return [ idx for idx in range( len( self ) ) ]
-    
-    #[Object.keys()]: List<Str>
-    @final
-    def keys( self, index=None ) -> list[str]: return self.keys()[index] if isinstance( index, int ) else list( self.__dict__['__data__'].keys() )
-    
-    #[Object.get()]: Any
-    @final
-    def get( self, key ) -> any: return self.__getitem__( key )
-    
-    #[Object.len()]: Int
-    @final
-    def len( self ) -> int: return self.__len__()
-
-    #[Object.length()]: Int
-    @final
-    @property
-    def length( self ) -> int: return self.__len__()
-    
-    #[Object.__set( Dict|List|Object data )]: None
-    @final
-    def set( self, data ) -> None:
-
+    def __set__( self, data:dict|Object ) -> None:
+        
         """
         Object setter.
 
-        :params Dict|List|Object data
+        :params Dict<Key, Value>|Object data
 
         :return None
         :raises TypeError
@@ -344,7 +296,6 @@ class Object:
             if "__index__" not in excepts:
                 excepts.append( "__index__" )
             for key in data.keys():
-                key = str( key )
                 value = data[key]
                 if isinstance( value, dict ):
                     define = typeof( self )
@@ -383,11 +334,11 @@ class Object:
                             name != diff:
                             self.__dict__['__data__'][key] = value
                         else:
-                            self.__dict__['__data__'][key].set( value )
+                            self.__dict__['__data__'][key].__set__( value )
                     elif isinstance( self.__dict__['__data__'][key], list ) and isinstance( value, list ):
-                        for i in range( len( value ) ):
-                            if value[i] not in self.__dict__['__data__'][key]:
-                                self.__dict__['__data__'][key].append( value[i] )
+                        for item in value:
+                            if item not in self.__dict__['__data__'][key]:
+                                self.__dict__['__data__'][key].append( item )
                     else:
                         self.__dict__['__data__'][key] = value
                 else:
@@ -395,9 +346,75 @@ class Object:
         elif isinstance( data, list ):
             raise ReportError( "Functionality for set multiple value on class {} is deprecated".format( typeof( self ) ) )
         elif isinstance( data, Object ):
-            for key in data.keys():
-                self.set({ key: data[key] })
+            for key in data.__keys__():
+                self.__set__({
+                    key: data[key]
+                })
+            ...
         else:
             raise ValueError( "Invalid \"data\" parameter, value must be type Dict|List|Object, {} passed".format( typeof( data ) ) )
-        self.__ref__()
+    
+    #[Object.__setattr__( Key name, Value value )]: None
+    @final
+    def __setattr__( self, name:Key, value:Value ) -> None:
+        self.__set__({
+            name: value
+        })
 
+    #[Object.__setitem__( Str key, Any value )]: None
+    @final
+    def __setitem__( self, key:Key, value:Value ) -> None:
+        self.__set__({ key: value })
+    
+    #[Object.__str__()]: Str
+    @final
+    def __str__( self ) -> str: return self.__json__()
+
+    #[Object.copy()]: Object
+    def copy( self ) -> Object: return self.__builder__( type( self ), self.__props__() )
+
+    #[Object.delt( Key index )]: None
+    def delt( self, index:Key ) -> None: self.__delitem__( index )
+    
+    #[Object.dump()]: Str
+    @final
+    def dump( self ) -> str: return self.__repr__()
+
+    #[Object.empty()]: Bool
+    @final
+    def empty( self ) -> bool: return self.__len__() == 0
+
+    #[Object.get( Key key )]: Any
+    @final
+    def get( self, key:Key ) -> any: return self.__getitem__( key )
+    
+    #[Object.isset( Key key )]: Bool
+    @final
+    def has( self, key:Key ) -> bool: return self.__contains__( key )
+    
+    #[Object.idxs()]: List<Int>
+    @final
+    def idxs( self ) -> list[int]: return [ idx for idx in range( len( self ) ) ]
+    
+    #[Object.json( Any *args, Any **kwargs )]: Str
+    @final
+    def json( self, *args:any, **kwargs:any ) -> str: return self.__json__( *args, **kwargs )
+    
+    #[Object.keys()]: List<Key>
+    def keys( self ) -> list[Key]: return self.__keys__()
+    
+    #[Object.len()]: Int
+    @final
+    def len( self ) -> int: return self.__len__()
+
+    #[Object.length()]: Int
+    @final
+    @property
+    def length( self ) -> int: return self.__len__()
+
+    #[Object.props()]: Dict<key, Value>
+    def props( self ) -> dict: return self.__props__()
+
+    #[Object.set( Dict<Key, Value>|Object data )]: None
+    @final
+    def set( self, data:dict|Object ) -> None: self.__set__( data )
