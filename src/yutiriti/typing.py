@@ -51,9 +51,9 @@ class Typing( Object ):
     if the value only contains numbers.
     """
 
-    #[Typing( Dict|List|Object data, Object parent )]: None
+    #[Typing( Dict|List|Object data )]: None
     @final
-    def __init__( self, data:dict|Object, parent:object=None ) -> None:
+    def __init__( self, data:dict|Object={} ) -> None:
         if not isinstance( data, ( dict, Object ) ):
             raise TypeError( "Invalid \"data\" parameter, value must be type Dict|Object, {} passed".format( typeof( data ) ) )
         parent = super()
@@ -122,17 +122,15 @@ class Typing( Object ):
     def __resolver__( self, value:any ) -> any:
         if isinstance( value, Readonly ):
             return value
-        if isinstance( value, ( dict, list, Object ) ):
-            if isinstance( value, dict ):
+        elif isinstance( value, ( dict, list, Object ) ):
+            if isinstance( value, ( dict, Object ) ):
                 indexs = list( value.keys() )
-            elif isinstance( value, Object ):
-                indexs = value.keys()
             else:
                 indexs = [ idx for idx in range( len( value ) ) ]
-            for i in range( len( indexs ) ):
-                index = indexs[i]
+            for index in indexs:
                 value[index] = self.__resolver__( value[index] )
         elif isinstance( value, str ):
             if match( r"^\d+$", value ):
                 value = int( value )
         return value
+    
