@@ -18,7 +18,7 @@
 #
 
 
-from typing import final, Generic, MutableMapping, overload, TypeVar
+from typing import final, Generic, MutableMapping, TypeVar
 
 from yutiriti.error import ReportError
 from yutiriti.readonly import Readonly

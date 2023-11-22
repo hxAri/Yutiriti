@@ -32,18 +32,17 @@ from yutiriti.yutiriti import puts, Yutiriti
 Self = TypeVar( "Self" )
 
 #[yutiriti.tester.Tester]
+@final
 class Tester( Readonly ):
 
     """
     """
     
     #[Tester()]: None
-    @final
     def __init__( self:Self ) -> None:
         ...
 
     #[Tester.testing( Self@Tester )]: None
-    @final
     def testing( self:Self=None ) -> None:
 
         """
