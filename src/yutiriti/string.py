@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
 #
 # @author Ari Setiawan
 # @create 15.10-2023 23:39
 # @github https://github.com/hxAri/Yutiriti
 #
-# Yūtiriti Copyright (c) 2022 - Ari Setiawan <hxari@proton.me>
+# Yūtiriti Copyright (c) 2023 - Ari Setiawan <hxari@proton.me>
 # Yūtiriti Licence under GNU General Public Licence v3
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,7 @@
 #
 
 
-from base64 import b64encode
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from binascii import hexlify
 from random import choice
 from re import finditer

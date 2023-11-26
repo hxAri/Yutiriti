@@ -48,7 +48,7 @@ Yūtiriti was created with the aim of making it easier to create Command Line pr
 #### yutiriti.common.Dropper
 Dropper is a function used to retrieve values from a dictionary or list. Note that the **dropper** will retrieve the value even though it also has to go through the list iteration for
 ```py
-from yutiriti import droper
+from yutiriti.common import droper
 
 # Example key of data want to get.
 keys = [
@@ -90,12 +90,15 @@ print( droper( data, keys, nested=True ) )
 #### yutiriti.file.File
 Simplify the method of reading and also writing file contents.
 ```py
-from yutiriti import File
+from yutiriti.file import File
 
 try:
 
     # Reading file contents.
     result = File.read( "/path/to/file" )
+
+    # Reading file per-lines.
+    result = File.line( "/path/to/file" )
 
     # Reading and decoding json contents.
     result = File.json( "/path/to/file.json" )
@@ -113,7 +116,7 @@ except BaseException as e:
 #### yutiriti.yutiriti.Puts
 Print any type into terminal screen with automatically colorize, It also fully supports parameters such as python's built-in **print** function.
 ```py
-from yutiriti import puts
+from yutiriti.yutiriti import puts
 
 puts( "Hello World!", end="\n" )
 ```
@@ -123,7 +126,8 @@ puts( "Hello World!", end="\n" )
 #### yutiriti.thread.Thread
 Make it easy to catch exceptions and also return values for functions executed via Thread, this is also a derivative of python's built-in Thread, just a few touches away.
 ```py
-from yutiriti import Request, Thread
+from yutiriti.request import Request
+from yutiriti.thread import Thread
 
 def ping( utl:str, timeout:int=10 ) -> int:
     request = Request()
@@ -158,7 +162,8 @@ The Typing class works in almost the same way as the Object class from Yutiriti,
 
 Apart from that, Typing also normalizes strings to int values ​​if the value only contains numbers. To use it you have to create your implementation class.
 ```py
-from yutiriti import Object, Typing
+from yutiriti.object import Object
+from yutiriti.typing import Typing
 
 class Example( Typing ):
 
@@ -179,7 +184,9 @@ class Example( Typing ):
 ```
 You can also still use Readonly classes.
 ```py
-from yutiriti import Object, Readonly, Typing
+from yutiriti.object import Object
+from yutiriti.readonly import Readonly
+from yutiriti.typing import Typing
 
 class Example( Readonly, Typing ):
     ...

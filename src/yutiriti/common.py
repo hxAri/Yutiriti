@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
 #
 # @author Ari Setiawan
 # @create 15.10-2023 23:39
 # @github https://github.com/hxAri/Yutiriti
 #
-# Yūtiriti Copyright (c) 2022 - Ari Setiawan <hxari@proton.me>
+# Yūtiriti Copyright (c) 2023 - Ari Setiawan <hxari@proton.me>
 # Yūtiriti Licence under GNU General Public Licence v3
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
-
-
-from datetime import datetime
-from re import match
 
 
 #[yutiriti.common.classmethods( Object obj, Bool wrapper )]: Dict<Str, Callable>

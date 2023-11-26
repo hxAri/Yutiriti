@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
 #
 # @author Ari Setiawan
 # @create 15.10-2023 23:39
 # @github https://github.com/hxAri/Yutiriti
 #
-# Yūtiriti Copyright (c) 2022 - Ari Setiawan <hxari@proton.me>
+# Yūtiriti Copyright (c) 2023 - Ari Setiawan <hxari@proton.me>
 # Yūtiriti Licence under GNU General Public Licence v3
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #
 
 
-from setuptools import find_packages as finder, setup
+from setuptools import setup
 
 
 #[setup.reader( Str fname )]: Str
@@ -45,6 +45,7 @@ setup(
     url="https://github.com/hxAri/Yutiriti",
     download_url="https://github.com/hxAri/Yutiriti/archive/refs/heads/main.zip",
     license="GNU General Public Licence v3",
+    license_file="LICENSE",
     classifiers=[
         "Environment :: CLI Environment",
         "Intended Audience :: Developers",

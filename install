@@ -17,23 +17,14 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
+clear
 
-from yutiriti import (
-	yutiriti,
-	common,
-	config,
-	cookie,
-	error,
-	file,
-	json,
-	object,
-	path,
-	readonly,
-	request,
-	string,
-	tester,
-	text,
-	thread,
-	tree,
-	typing
-)
+if [[ -f /usr/bin/pip || -d /sdcard ]]; then
+	installed=$( pip list | grep yutiriti )
+	if [[ $installed != "" ]]; then
+		pip uninstall yutiriti -y
+	fi
+	python setup.py install
+else
+	echo -e "yutiriti: pip: does not installed" && exit 1
+fi

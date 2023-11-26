@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
 #
 # @author Ari Setiawan
 # @create 15.10-2023 23:39
 # @github https://github.com/hxAri/Yutiriti
 #
-# Yūtiriti Copyright (c) 2022 - Ari Setiawan <hxari@proton.me>
+# Yūtiriti Copyright (c) 2023 - Ari Setiawan <hxari@proton.me>
 # Yūtiriti Licence under GNU General Public Licence v3
 #
 # This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ from typing import final
 
 from yutiriti.error import Error
 from yutiriti.thread import Thread
-from yutiriti.common import typedef, typeof
+from yutiriti.common import typeof
 
 
 #[yutiriti.Yutiriti]
@@ -554,9 +554,9 @@ class Yutiriti:
             not instantce of class EOFError, KeyboardInterrupt
         """
 
-        self.clear
-        print( "\x0a\x7b\x7d\x0a\x0a\x0a".format( self.banner ) )
         try:
+            self.clear
+            print( "\x0a\x7b\x7d\x0a\x0a\x0a".format( self.banner ) )
             task = Thread( target=target, args=args, kwargs=kwargs )
             named = type( self ).__name__
             strings = "\x7b\x30\x7d\x7b\x31\x7d".format( "\x20" *4, strings )
@@ -643,7 +643,7 @@ def puts( *values:any, base:str="\x1b[0m", end:str="\x0a", sep:str="\x20" ) -> N
     :params Any *values
     :params Str base
     :params Str end
-    :params Str seo
+    :params Str sep
 
     :return None
     """
