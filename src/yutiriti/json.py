@@ -18,13 +18,11 @@
 #
 
 
-from json import (
-    dumps,
-    JSONDecodeError as JSONError, 
-    loads, 
-)
+from datetime import datetime
+from json import dumps, JSONDecodeError as JSONError, loads
+from typing import final
 
-from yutiriti.common import typedef
+import yutiriti
 
 
 #[yutiriti.json.JSON]
@@ -38,10 +36,8 @@ class JSON:
     #[Json.encode( Any values, Any *args, Any **kwargs )]
     @staticmethod
     def encode( values, *args, **kwargs ):
-        if typedef( values, "Object" ):
-            return values.json()
         kwargs['indent'] = kwargs.pop( "indent", 4 )
-        return( dumps( values, *args, **kwargs ) )
+        return( dumps( JSON.serializer( values ), *args, **kwargs ) )
         
     #[Json.isSerializable( Any values )]
     @staticmethod
@@ -62,4 +58,19 @@ class JSON:
         except TypeError:
             return( False )
         return( True )
+    
+    @final
+    @staticmethod
+    def serializer( values ) -> dict|list:
+        if isinstance( values, ( dict, yutiriti.object.Object ) ):
+            if isinstance( values, yutiriti.object.Object ):
+                values = values.props()
+            for key in values.keys():
+                values[key] = JSON.serializer( values[key] )
+        elif isinstance( values, list ):
+            for index in range( len( values ) ):
+                values[index] = JSON.serializer( values[index] )
+        elif isinstance( values, datetime ):
+            values = values.strftime( "%d-%m-%YT%H:%M:%S" )
+        return values
     

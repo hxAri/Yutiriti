@@ -48,6 +48,12 @@ class Tester( Readonly ):
         """
         """
 
+        def callback( x ) -> None:
+            parts = split( r"\x0a", x if isinstance( x, str ) else repr( x ) )
+            if len( parts[0] ) <= 16:
+                parts[0] += "\x20" *20
+            puts( "\r\x7b\x7d\x7b\x7d".format( "\x20" *6, "\x0a\x7b\x7d".format( "\x20" *6 ).join( parts ), end="\x0a" + ( "\x20" *5 ) ) )
+
         if self is None:
             self = Tester()
 
@@ -71,7 +77,7 @@ class Tester( Readonly ):
                     if part != "\x20":
                         sleep( 00000.1 )
             try:
-                thread = Thread( target=lambda: methods[method]( lambda x: puts( "\r\x7b\x7d\x7b\x7d".format( "\x20" *6, "\x0a\x7b\x7d".format( "\x20" *6 ).join( split( r"\x0a", x if isinstance( x, str ) else repr( x ) ) ) ), end="\x0a" + ( "\x20" *5 ) ) ) )
+                thread = Thread( target=lambda: methods[method]( callback ) )
                 thread.start()
                 while thread.is_alive():
                     for u in "\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x20":

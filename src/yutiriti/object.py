@@ -213,7 +213,11 @@ class Object:
         def represent( data:dict|list|Object, indent:int=4 ) -> str:
 
             #[Object.__repr__$.represent$.normalize( Str string )]: Str
-            def normalize( string:str ) -> str: return string.replace( "\"", "\\\"" )
+            def normalize( string:str ) -> str:
+                return string \
+                    .replace( "\"", "\\\"" ) \
+                    .replace( "\n", "\\n" ) \
+                    .replace( "\t", "\\t" )
 
             #[Object.__repr__$.represent$.wrapper( Dict<Key, Value>|List<Value>|Object data, Int indent )]: Str
             def wrapper( data:dict|list|Object, indent:int=4 ) -> str:
