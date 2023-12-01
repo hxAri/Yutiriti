@@ -18,7 +18,7 @@
 #
 
 
-from typing import final, Generic, MutableMapping, TypeVar
+from typing import final, TypeVar
 
 from yutiriti.error import ReportError
 from yutiriti.readonly import Readonly
@@ -33,9 +33,13 @@ ObjectBuilder = TypeVar( "ObjectBuilder" )
 
 #[yutiriti.object.Object]
 class Object:
+
+    """
+    A python Object utility to transform any dictionary structure into Object
+    """
     
     #[Object( Dict|Object data )]: None
-    def __init__( self, data:dict|Object={} ) -> None:
+    def __init__( self, data:dict|Object|None=None ) -> None:
 
         """
         Construct method of class Object.
@@ -48,7 +52,7 @@ class Object:
 
         self.__dict__['__index__'] = 0
         self.__dict__['__data__'] = {}
-        self.__set__( data )
+        self.__set__( data if isinstance( data, dict ) else {} )
 
     #[Object.__builder__( Object parent, Dict<Key, Value>|Object data )]: ObjectBuilder
     @final
@@ -65,7 +69,12 @@ class Object:
         """
 
         #[Object.__builder__$.ObjectBuilder]
-        class ObjectBuilder( parent, Generic[Key, Value], MutableMapping[Key, Value] ):
+        class ObjectBuilder( parent ):
+
+            """
+            Children Object builder for avoid unhandled argument 
+            when create new object for children value
+            """
 
             #[ObjectBuilder( Dict<Key, Value>|Object data )]: None
             def __init__( self, data:dict|Object ) -> None:
@@ -81,9 +90,7 @@ class Object:
     @final
     def __delattr__( self, key:Key ) -> None:
         if key in self.__dict__:
-            if key != "__data__" and \
-                key != "__index__" and \
-                key != "__parent__":
+            if key not in [ "__data__", "__index__", "__parent__" ]:
                 del self.__dict__[key]
         elif key in self.__dict__['__data__']:
             del self.__dict__['__data__'][key]
@@ -94,9 +101,7 @@ class Object:
         if index in self.__dict__['__data__']:
             del self.__dict__['__data__'][index]
         elif index in self.__dict__:
-            if index != "__data__" and \
-                index != "__index__" and \
-                index != "__parent__":
+            if index not in [ "__data__", "__index__", "__parent__" ]:
                 del self.__dict__[index]
     
     #[Object.__getattr__( Key name )]: Any
@@ -104,7 +109,7 @@ class Object:
     def __getattr__( self, name:Key ) -> any:
         if name in self.__dict__:
             return self.__dict__[name]
-        elif name in self.__dict__['__data__']:
+        if name in self.__dict__['__data__']:
             return self.__dict__['__data__'][name]
         raise AttributeError( "\"{}\" object has no attribute \"{}\"".format( typeof( self ), name ) )
     
@@ -116,6 +121,11 @@ class Object:
         if key in self.__dict__:
             return self.__dict__[key]
         raise KeyError( "\"{}\" object has no item \"{}\"".format( typeof( self ), key ) )
+
+    #[Object.__index__]: Int
+    @final
+    @property
+    def __index__( self ) -> int: return self.__dict__['__index__']
     
     #[Object.__iter__()]: Object
     @final
@@ -137,12 +147,12 @@ class Object:
                                 if not JSON.isSerializable( data[key] ):
                                     data[key] = self.__str( data[key] )
                 case "list":
-                    for idx in range( len( data ) ):
-                        if isinstance( data[idx], ( dict, list ) ):
-                            data[idx] = self.__json__( data[idx] )
+                    for idx, value in enumerate( data ):
+                        if isinstance( value, ( dict, list ) ):
+                            data[idx] = self.__json__( value )
                         else:
-                            if not JSON.isSerializable( data[idx] ):
-                                data[idx] = self.__str( data[idx] )
+                            if not JSON.isSerializable( value ):
+                                data[idx] = self.__str( value )
             return data
         
         return JSON.encode( iterator( self.__props__() ), *args, **kwargs )
@@ -229,7 +239,7 @@ class Object:
                     indexs = data.keys()
                 else:
                     define = "[{}]"
-                    indexs = [ idx for idx in range( length ) ]
+                    indexs = list( idx for idx in range( length ) )
                 for index in indexs:
                     key = define.format( index )
                     value = data[index]
@@ -261,8 +271,7 @@ class Object:
                 return f",\n{spaces}".join( values )
             if len( data ) >= 1:
                 return "{}(\n{}{}\n{})".format( typeof( data ), "\x20" * indent, wrapper( data, indent=indent ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
-            else:
-                return "{}(\n{})".format( typeof( data ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
+            return "{}(\n{})".format( typeof( data ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
         
         return represent( self, indent=4 )
     
@@ -333,9 +342,7 @@ class Object:
                     if isinstance( self.__dict__['__data__'][key], Object ) and isinstance( value, ( dict, Object ) ):
                         name = typeof( self.__dict__['__data__'][key] )
                         diff = typeof( value )
-                        if name != "Object" and name != "ObjectBuilder" or \
-                            diff != "Object" and diff != "ObjectBuilder" or \
-                            name != diff:
+                        if name not in [ "Object", "ObjectBuilder", diff ]:
                             self.__dict__['__data__'][key] = value
                         else:
                             self.__dict__['__data__'][key].__set__( value )

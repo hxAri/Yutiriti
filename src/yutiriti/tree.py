@@ -28,20 +28,17 @@ SPC_LINE = "\x20\x20\x20\x20"
 #[yutiriti.tree$.builder( Any data, Int indent, Str space, Bool capitalize )]: Str
 def builder( data:any, indent:int, space:str, capitalize:bool=False ) -> str:
 
-    """
-    """
+    """ A tree builder """
 
     if isinstance( data, ( dict, list, set, tuple ) ):
         return looping( data=data, indent=indent if indent >= 4 else 4, space=space, capitalize=capitalize )
-    else:
-        return f"{space}{END_LINE}{data}\x0a"
+    return f"{space}{END_LINE}{data}\x0a"
     
 
 #[yutiriti.tree$.looping( Dict|List[Any]|Set|Tuple data, Int indent, Str space, Bool capitalize )]: Str
 def looping( data:dict|list|set|tuple, indent:int, space:str, capitalize:bool=False ) -> str:
 
-    """
-    """
+    """ A Tree looping iteration handler """
     
     result = ""
     if isinstance( data, dict ):
@@ -49,8 +46,7 @@ def looping( data:dict|list|set|tuple, indent:int, space:str, capitalize:bool=Fa
         if length >= 1:
             keys = list( data.keys() )
             length -= 1
-            for index in range( len( keys ) ):
-                keyset = keys[index]
+            for index, keyset in enumerate( keys ):
                 value = data[keyset]
                 if index != length:
                     result += space
@@ -90,8 +86,7 @@ def looping( data:dict|list|set|tuple, indent:int, space:str, capitalize:bool=Fa
         if length >= 1:
             data = list( data )
             length -= 1
-            for index in range( len( data ) ):
-                value = data[index]
+            for index, value in enumerate( data ):
                 if index != length:
                     if isinstance( value, dict ):
                         if value:
@@ -197,6 +192,9 @@ def looping( data:dict|list|set|tuple, indent:int, space:str, capitalize:bool=Fa
 
 #[yutiriti.tree.tree$.normalize( Str keyset, Bool capitalize )]: Str
 def normalize( keyset:str, capitalize:bool=False ) -> str:
+
+    """ Normalize sey set of value """
+
     keyset = str( keyset )
     return keyset.capitalize() if capitalize else keyset
 

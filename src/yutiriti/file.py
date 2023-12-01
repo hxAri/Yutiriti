@@ -18,12 +18,18 @@
 #
 
 
+from os import remove
+
 from yutiriti.json import JSON
 from yutiriti.path import Path
 
 
 #[yutiriti.file.File]
 class File:
+
+    """
+    File utility
+    """
     
     #[File.json( Str fname )]: Dict|List
     @staticmethod
@@ -44,36 +50,38 @@ class File:
         
         return( JSON.decode( File.read( fname ) ) )
     
-    #[File.read( Str fname )]: Str
+    #[File.read( Str fname, Str encoding )]: Str
     @staticmethod
-    def read( fname:str ) -> str:
+    def read( fname:str, encoding:str="utf-8" ) -> str:
         
         """
         Read file contents.
         
-        :params String fname
-            Filename
+        :params Str fname
+        :params Str encoding
         
         :return String
             File contents
         """
         
-        with open( fname, "r" ) as fopen:
+        with open( fname, "r", encoding=encoding ) as fopen:
             fread = fopen.read()
             fopen.close()
-        return( fread )
-    
-    #[File.line( Str fname )]: List
+        return fread
+
+    #[File.line( Str fname )]: List<Str>
     @staticmethod
-    def line( fname:str ) -> list:
+    def line( fname:str ) -> list[str]:
         return File.read( fname ).split( "\n" )
     
     #[File.remove( Str fname )]: None
-    def remove( fname:str ) -> None: ...
-    
-    #[File.write( Str fname, Str fdata, Str fmode )]: None
     @staticmethod
-    def write( fname:str, fdata, fmode:str="w" ) -> None:
+    def remove( fname:str ) -> None:
+        remove( fname )
+    
+    #[File.write( Str fname, Any fdata, Str fmode, Str encoding )]: Bool|Int
+    @staticmethod
+    def write( fname:str, fdata:any, fmode:str="w", encoding:str="utf-8" ) -> bool|int:
         
         """
         Write content into file.
@@ -82,12 +90,14 @@ class File:
             Filename
         :params Mixed fdata
             File contents to be write
-        :params String fmode
+        :params Str fmode
             File open mode
+        :params Str encoding
         
-        :return  None
+        :return Bool|Int
         """
         
+        write = False
         fpath = fname.split( "/" )
         fpath.pop()
         if len( fpath ) > 0:
@@ -97,7 +107,8 @@ class File:
                 fdata = JSON.encode( fdata )
             case _:
                 pass
-        with open( fname, fmode ) as fopen:
-            fopen.write( fdata )
+        with open( fname, fmode, encoding=encoding ) as fopen:
+            write = fopen.write( fdata )
             fopen.close()
+        return write
     

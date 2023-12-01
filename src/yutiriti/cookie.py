@@ -20,16 +20,21 @@
 
 from http.cookies import SimpleCookie
 from re import findall
+from requests.cookies import RequestsCookieJar as Cookies
 
 from yutiriti.string import String
 
 
 #[yutiriti.utililty.cookie.Cookie]
 class Cookie:
+
+    """
+    Cookie setter
+    """
     
-    #[Cookie.parse( String raw )]
+    #[Cookie.parse( Str raw )]: List<Dict<Str, Any>>
     @staticmethod
-    def parse( raw ):
+    def parse( raw ) -> list[dict[str:any]]:
         expires = findall( r"expires\=([^\;]+)", raw )
         for expire in expires:
             raw = raw.replace( expire, String.bin2hex( expire ) )
@@ -44,11 +49,11 @@ class Cookie:
                 }
             }
             attribute = item.split( "; " )
-            for i in range( len( attribute ) ):
-                attr = attribute[i].split( "=" )
-                if  i == 0:
+            for count, attr in enumerate( attribute ):
+                attr = attr.split( "=" )
+                if count == 0:
                     cookie['name'] = attr[0]
-                    cookie['value'] = attr[1]
+                    cookie['value'] =    attr[1]
                 else:
                     attrName = attr[0].lower()
                     match attrName:
@@ -68,8 +73,9 @@ class Cookie:
             jar.append( cookie )
         return jar
     
-    #[Cookie.set( requests.cookie.RequestCookieJar cookies, String key, String value )]: None
-    def set( cookies, key, value, domain="", path="/" ):
+    #[Cookie.set( requests.cookies.RequestsCookieJar cookies, Str key, Str value )]: None
+    @staticmethod
+    def set( cookies:Cookies, key:str, value:str, domain:str="", path:str="/" ) -> None:
         for cookie in cookies:
             if  cookie.name == key:
                 cookie.path = path
@@ -78,9 +84,9 @@ class Cookie:
                 return
         cookies.set( key, value, domain=domain, path=path )
     
-    #[Cookie.simple( String raw )]: Dict
+    #[Cookie.simple( Str raw )]: Dict
     @staticmethod
-    def simple( raw ):
+    def simple( raw:str ) -> dict[str:str]:
         cookie = SimpleCookie()
         cookie.load( raw )
         parsed = {}
@@ -88,8 +94,8 @@ class Cookie:
             parsed[key] = morsel.value
         return parsed
     
-    #[Cookie.string( RequestsCookieJar cookies )]: String
+    #[Cookie.string( requests.cookies.RequestsCookieJar cookies )]: Str
     @staticmethod
-    def string( cookies ):
+    def string( cookies:Cookies ) -> str:
         return "\x3b\x20".join([ f"{key}={val}" for key, val in cookies.items() ])
     

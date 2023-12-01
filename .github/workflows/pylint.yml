@@ -1,7 +1,7 @@
+
 name: Pylint
 
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,4 +20,5 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --indent-string='\t' --indent-after-paren=1 $(git ls-files '*.py')
+        pylint --argument-naming-style=camelCase --attr-naming-style=camelCase --class-attribute-naming-style=UPPER_CASE --class-const-naming-style=UPPER_CASE --class-naming-style=PascalCase --const-naming-style=UPPER_CASE --variable-naming-style=camelCase --function-naming-style=camelCase --max-attributes=30 --method-naming-style=camelCase --good-names="e,i,u" --ignore-docstrings=y --ignore-long-lines="[^\\n]+" --indent-string="    " --disable=broad-exception-caught --disable=consider-using-f-string --disable=function-redefined --disable=keyword-arg-before-vararg --disable=missing-function-docstring --disable=missing-module-docstring --disable=multiple-statements --disable=redefined-argument-from-local --disable=redefined-builtin --disable=redefined-outer-name --disable=too-many-arguments --disable=too-many-branches --disable=too-many-locals --disable=too-many-nested-blocks --disable=too-many-statements --disable=trailing-newlines --disable=trailing-whitespace --disable=unnecessary-dunder-call --disable=unnecessary-pass --disable=unexpected-special-method-signature src/yutiriti/*.py 
+  

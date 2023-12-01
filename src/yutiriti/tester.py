@@ -48,8 +48,8 @@ class Tester( Readonly ):
         """
         """
 
-        def callback( x ) -> None:
-            parts = split( r"\x0a", x if isinstance( x, str ) else repr( x ) )
+        def callback( value:any ) -> None:
+            parts = split( r"\x0a", value if isinstance( value, str ) else repr( value ) )
             if len( parts[0] ) <= 16:
                 parts[0] += "\x20" *20
             puts( "\r\x7b\x7d\x7b\x7d".format( "\x20" *6, "\x0a\x7b\x7d".format( "\x20" *6 ).join( parts ), end="\x0a" + ( "\x20" *5 ) ) )
@@ -92,9 +92,9 @@ class Tester( Readonly ):
                 else:
                     print( "\x20\x1b[1;32mSuccess" )
                     passed.append( True )
-            except EOFError as e:
+            except EOFError:
                 puts( f"\r{string}\x20\x1b[1;38;5;149mCanceled" )
-            except KeyboardInterrupt as e:
+            except KeyboardInterrupt:
                 puts( f"\r{string}\x20\x1b[1;38;5;160mCanceled" )
             count += 1
         print( "\n{}".format( "\x20" *4 ), end="" )

@@ -35,6 +35,10 @@ from yutiriti.common import typeof
 #[yutiriti.Yutiriti]
 class Yutiriti:
 
+    """
+    An object utility
+    """
+
     #[Yutiriti.banner]: Str
     @property
     def banner( self ) -> str:
@@ -50,7 +54,6 @@ class Yutiriti:
 
     #[Yutiriti.clear]: None
     @final
-    @property
     def clear( self ) -> None:
 
         """
@@ -60,7 +63,7 @@ class Yutiriti:
         """
 
         system( "clear" )
-    
+
     #[Yutiriti.close( Any *args, Any **kwargs )]: None
     @final
     def close( self, *args:any, **kwargs:any ) -> None:
@@ -76,7 +79,7 @@ class Yutiriti:
 
         self.output( *args, **kwargs )
         sys.exit()
-    
+
     #[Yutiriti.colorize( Str format, Str base )]: Str
     @final
     def colorize( self, string:str, base:str=None ) -> str:
@@ -149,13 +152,13 @@ class Yutiriti:
             last = base
             escape = None
             pattern = "(?:{})".format( "|".join( regexp['pattern'] for regexp in regexps.values() ) )
-            compile = re.compile( pattern, re.MULTILINE | re.S )
+            compiles = re.compile( pattern, re.MULTILINE | re.S )
             skipable = []
             for idx, string in enumerate( strings ):
                 if idx in skipable:
                     continue
                 color = re.match( r"^(?:\x1b|\033)\[([^m]+)m$", string )
-                if color != None:
+                if color is not None:
                     index = idx +1
                     escape = color.group( 0 )
                     last = escape
@@ -176,8 +179,9 @@ class Yutiriti:
                 string = strings[index]
                 search = 0
                 match = None
-                while( match := compile.search( string, search ) ) is not None:
+                while( match := compiles.search( string, search ) ) is not None:
                     if match.groupdict():
+                        group = None
                         groups = match.groupdict().keys()
                         for group in groups:
                             if group in regexps and \
@@ -203,11 +207,9 @@ class Yutiriti:
                 result += string[search:]
                 #escape = None
         except Exception as e:
-            print( e )
-            print( e.__traceback__.tb_lineno )
-            exit()
+            raise e
         return result
-    
+
     #[Yutiriti.exit( Any *args, Any **kwargs )]: None
     @final
     def exit( self, *args:any, **kwargs:any ) -> None:
@@ -222,7 +224,7 @@ class Yutiriti:
         """
 
         self.close( *args, **kwargs )
-    
+
     #[Yutiriti.emit( BaseException|Error|List error )]: None
     @final
     def emit( self, error:BaseException ) -> None:
@@ -235,7 +237,7 @@ class Yutiriti:
         :return None
         """
 
-        self.clear
+        self.clear()
         name = type( self ).__name__
         strings = f"{name}\x2e\x65\x72\x72\x6f\x72\x0a"
         if isinstance( error, Error ):
@@ -298,17 +300,19 @@ class Yutiriti:
             if filename and lineno:
                 strings += f"\x20\x20\x20\x20{filename}\x20{lineno}\x0a"
             if isinstance( message, list ):
-                for i in range( len( message ) ):
-                    strings += f"\x20\x20\x20\x20{message[i]}\x0a"
+                for i in message:
+                    strings += f"\x20\x20\x20\x20{i}\x0a"
+                # for i in range( len( message ) ):
+                #     strings += f"\x20\x20\x20\x20{message[i]}\x0a"
             else:
                 strings += f"\x20\x20\x20\x20{message}\x0a"
         for subject in findall( r"(\[Errno\s\d+\]\s*)", strings ):
             strings = strings.replace( subject, "" )
         print( "\x0a\x7b\x7d\x0a\x0a\x0a\x7b\x7d".format( self.banner, self.colorize( f"\x1b[0m{strings}" ) ) )
-    
-    #[Yutiriti.getpass( Str label, Bool ignore )]: Str
+
+    #[Yutiriti.getpass( Str label, Bool ignore )]: None|Str
     @final
-    def getpass( self, label:str, ignore:bool=True ) -> str:
+    def getpass( self, label:str, ignore:bool=True ) -> str|None:
 
         """
         Get password from input stream of user.
@@ -317,10 +321,12 @@ class Yutiriti:
         :params Bool ignore
             Allow ignore KeyboardInterrupt
         
-        :return Int|Str
+        :return None|Str
+            Return None if Keyboard is interrupt or the program is force close
+            Return Str if successully input password
         """
 
-        if label == None or label == "":
+        if label:
             place = "\x7b\x7d\x2e\x67\x65\x74\x70\x61\x73\x73\x3a\x20".format( type( self ).__name__ )
         else:
             place = "\x7b\x7d\x3a\x20".format( label )
@@ -332,14 +338,15 @@ class Yutiriti:
         except EOFError as e:
             self.close( e, "\x46\x6f\x72\x63\x65\x20\x63\x6c\x6f\x73\x65" )
         except KeyboardInterrupt as e:
-            if ignore == False:
+            if ignore is False:
                 self.close( e, "\x46\x6f\x72\x63\x65\x20\x63\x6c\x6f\x73\x65" )
             print( "\r" )
             return self.getpass( label, ignore )
-    
+        return None
+
     #[Yutiriti.input( Str label, Any default, Bool number, Bool ignore )]: Int|Str
     @final
-    def input( self, label:str, default:any=None, number:bool=False, ignore:bool=True ) -> int|str:
+    def input( self, label:str, default:any=None, number:bool=False, ignore:bool=True ) -> int|str|None:
 
         """
         Get input stream from user.
@@ -355,12 +362,12 @@ class Yutiriti:
         :return Int|Str
         """
 
-        if label == None or label == "":
+        if label:
             place = "\x7b\x7d\x2e\x69\x6e\x70\x75\x74\x3a\x20".format( type( self ).__name__ )
         else:
             if not isinstance( label, str ):
                 typed = typeof( label )
-                if typed == "function" or typed == "method":
+                if typed in [ "function", "method" ]:
                     label = label.__name__
                     label = label.capitalize()
                 else:
@@ -376,7 +383,7 @@ class Yutiriti:
                 value = input( self.colorize( place ) )
                 value = value.strip()
             if value == "":
-                if default != None:
+                if default is not None:
                     value = default if type( default ).__name__ != "list" else default[0]
                 else:
                     value = self.input( label, default, number, ignore )
@@ -386,16 +393,17 @@ class Yutiriti:
                 except ValueError:
                     value = self.input( label, default, number, ignore )
             return value
-        except ValueError as e:
+        except ValueError:
             return self.input( label, default, number, ignore )
         except EOFError as e:
             self.close( e, "\x46\x6f\x72\x63\x65\x20\x63\x6c\x6f\x73\x65" )
         except KeyboardInterrupt as e:
-            if ignore == False:
+            if ignore is False:
                 self.close( e, "\x46\x6f\x72\x63\x65\x20\x63\x6c\x6f\x73\x65" )
             print( "\r" )
             return self.input( label, default, number, ignore )
-    
+        return None
+
     #[Yutiriti.output( Any refer, Dict|List|Str message, Bool line )]: None
     @final
     def output( self, refer:any, message:dict|list|str, line:bool=False ) -> None:
@@ -430,11 +438,11 @@ class Yutiriti:
                 for i in message:
                     if isinstance( message[i], dict ):
                         try:
-                            stack += println(*[ message[i]['message'], indent +4 if message[i]['line'] else indent, False if message[i]['line'] else True ])
+                            stack += println(*[ message[i]['message'], indent +4 if message[i]['line'] else indent, not message[i]['line'] ])
                         except KeyError:
-                            stack += println(*[ message[i], indent +4 if line else indent, False if line else True ])
+                            stack += println(*[ message[i], indent +4 if line else indent, not line ])
                     elif isinstance( message[i], list ):
-                        stack += println(*[ message[i], indent +4 if line else indent, False if line else True ])
+                        stack += println(*[ message[i], indent +4 if line else indent, not line ])
                     else:
                         parts = str( message[i] )
                         parts = parts.split( "\n" )
@@ -445,16 +453,16 @@ class Yutiriti:
                                 stack += "\x7b\x30\x7d\x7b\x31\x7d\x0a ".format( space, part )
             elif isinstance( message, list ):
                 u = 0
-                l = len( message )
-                for i in range( l ):
+                lem = len( message )
+                for i in range( lem ):
                     if isinstance( message[i], dict ):
                         try:
-                            stack += println(*[ message[i]['message'], indent +4 if message[i]['line'] else indent, False if message[i]['line'] else True ])
+                            stack += println(*[ message[i]['message'], indent +4 if message[i]['line'] else indent, not message[i]['line'] ])
                         except KeyError:
-                            stack += println(*[ message[i], indent +4 if line else indent, False if line else True ])
+                            stack += println(*[ message[i], indent +4 if line else indent, not line ])
                         u += 1
                     elif isinstance( message[i], list ):
-                        stack += println(*[ message[i], indent +4 if line else indent, False if line else True ])
+                        stack += println(*[ message[i], indent +4 if line else indent, not line ])
                         u += 1
                     else:
                         parts = str( message[i] )
@@ -462,7 +470,7 @@ class Yutiriti:
                         for part in parts:
                             if line:
                                 index = i +1 -u
-                                length = len( str( l ) )
+                                length = len( str( lem ) )
                                 length = length +1 if length == 1 else length
                                 format = f"\x7b\x30\x7d\x7b\x31\x3a\x30\x3e{length}\x7d\x29\x20\x1b[1;38;5;252m\x7b\x32\x7d\x1b[0m\x0a"
                                 stack += format.format( space, index, part )
@@ -473,8 +481,8 @@ class Yutiriti:
                 for line in message.split( "\n" ):
                     stack = "\x7b\x30\x7d\x7b\x31\x7d\x0a".format( space, line )
             return stack
-        
-        self.clear
+
+        self.clear()
         base = refer
         try:
             refer = refer.__name__
@@ -495,7 +503,7 @@ class Yutiriti:
         strings += println( message, 4, line )
 
         print( "\x0a\x7b\x7d\x0a\x0a\x0a\x7b\x7d".format( self.banner, self.colorize( f"\x1b[0m{strings}".replace( "\t", "\x20" *4 ) ) ) )
-    
+
     #[Yutiriti.previous( Callable back, Str label, Any *args, Any **kwargs )]: Any
     @final
     def previous( self, back:callable, label:str=None, *args:any, **kwargs:any ) -> any:
@@ -513,7 +521,7 @@ class Yutiriti:
 
         match typeof( back ):
             case "function" | "method":
-                if label == None:
+                if label is None:
                     try:
                         label = f"Back ({back.__self__.__class__.__name__})"
                     except AttributeError:
@@ -522,10 +530,15 @@ class Yutiriti:
                 return back( *args, **kwargs )
             case _:
                 raise ValueError( f"Argument back must be type Function|Method, {type( back ).__name__} given" )
-    
+
     #[Yutiriti.rmdoc( Dict lists )]: List
     @final
     def rmdoc( self, lists:dict ) -> list:
+
+        """
+        Remove document in list
+        """
+
         stack = []
         for i in lists:
             match typeof( lists[i] ):
@@ -534,7 +547,7 @@ class Yutiriti:
                 case _:
                     stack.append( i )
         return stack
-    
+
     #[Yutiriti.thread( Str strings, Function Object, Any *args, Any **kwargs )]: Any
     @final
     def thread( self, strings:str, target:callable, *args:any, **kwargs:any ) -> any:
@@ -555,7 +568,7 @@ class Yutiriti:
         """
 
         try:
-            self.clear
+            self.clear()
             print( "\x0a\x7b\x7d\x0a\x0a\x0a".format( self.banner ) )
             task = Thread( target=target, args=args, kwargs=kwargs )
             named = type( self ).__name__
@@ -574,7 +587,7 @@ class Yutiriti:
                     sleep( 00000.1 )
             print( "\x0d\x0a" )
             sleep( 00000.1 )
-            self.clear
+            self.clear()
         except EOFError as e:
             self.close( e, "\x46\x6f\x72\x63\x65\x20\x63\x6c\x6f\x73\x65" )
         except KeyboardInterrupt:
@@ -582,12 +595,11 @@ class Yutiriti:
         error = task.getExcept()
         if isinstance( error, BaseException ):
             raise error
-        else:
-            return task.getReturn()
-    
+        return task.getReturn()
+
     #[Yutiriti.tryAgain( Str label, Callable next, Callable other, Str value, List defaultValue, Any *args, Any **kwargs )]: Any
     @final
-    def tryAgain( self, label:str="Try again [Y/n]", next:callable=None, other:callable=None, value:str="Y", defaultValue=[ "Y", "y", "N", "n" ], *args, **kwargs ) -> any:
+    def tryAgain( self, label:str="Try again [Y/n]", next:callable=None, other:callable=None, value:str="Y", defaultValue=None, *args, **kwargs ) -> any:
 
         """
         Try again input.
@@ -604,16 +616,12 @@ class Yutiriti:
         :raises TypeError
             When the parameter value is invalid value type
         """
-
-        if self.input( label, default=defaultValue ).upper() == value:
+        
+        if self.input( label, default=defaultValue if defaultValue else [ "Y", "y", "N", "n" ] ).upper() == value:
             if callable( next ):
                 return next( *args, **kwargs )
-            else:
-                raise TypeError( "Invalid \"next\" parameter, value must be type Function|Method, {} passed".format( type( next ).__name__ ) )
-        else:
-            if callable( other ):
-                return other()
-        pass
+            raise TypeError( "Invalid \"next\" parameter, value must be type Function|Method, {} passed".format( type( next ).__name__ ) )
+        return other() if callable( other ) else None
 
     #[Yutiriti.xdgopen( Str target )]: Int
     @final
@@ -631,8 +639,8 @@ class Yutiriti:
         try:
             return system( "xdg-open {}".format( target ) )
         except BaseException:
-            pass
-    
+            return 1
+
 
 #[yutiriti.puts( Any *values, Str base, Str end, Str sep )]: None
 def puts( *values:any, base:str="\x1b[0m", end:str="\x0a", sep:str="\x20" ) -> None:
@@ -649,4 +657,3 @@ def puts( *values:any, base:str="\x1b[0m", end:str="\x0a", sep:str="\x20" ) -> N
     """
 
     print( *[ Yutiriti.colorize( self=puts, base=base, string=value if isinstance( value, str ) else repr( value ) ) for value in values ], end=end, sep=sep )
-

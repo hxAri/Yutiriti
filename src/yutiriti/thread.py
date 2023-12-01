@@ -23,10 +23,12 @@ from threading import Thread as Threading
 
 #[yutiriti.thread.Thread]
 class Thread( Threading ):
+
+    """ Thread class support exception and data return """
     
     #[Thread()]: None
-    def __init__( self, group=None, target=None, name=None, args=(), kwargs={} ) -> None:
-        Threading.__init__( self, group=group, target=target, name=name, args=args, kwargs=kwargs )
+    def __init__( self, group=None, target=None, name=None, args=None, kwargs=None ) -> None:
+        Threading.__init__( self, group=group, target=target, name=name, args=args if args else (), kwargs=kwargs if kwargs else {} )
         self._return = None
         self._except = None
     
@@ -48,7 +50,7 @@ class Thread( Threading ):
             Raised Exception on thread
         """
         
-        return( self._except )
+        return self._except
     
     #[Thread.getReturn()]: Any
     def getReturn( self ) -> any:
@@ -59,5 +61,5 @@ class Thread( Threading ):
         :return Any
         """
         
-        return( self._return )
+        return self._return
     

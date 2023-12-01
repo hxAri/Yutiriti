@@ -21,10 +21,10 @@
 from datetime import datetime, timedelta
 from re import match
 from urllib.parse import parse_qs as queryparse, urlparse
+from typing import final
 from requests import Session, Response
 from requests.cookies import RequestsCookieJar as Cookies
 from requests.structures import CaseInsensitiveDict as Headers
-from typing import final
 
 from yutiriti.config import VERSION
 from yutiriti.error import ( 
@@ -42,6 +42,13 @@ from yutiriti.common import typeof
 
 #[yutiriti.request.Request]
 class Request( Readonly ):
+
+    """
+    Modified Request object for support usage, this request object can automatically 
+    save any request history into json file when the request has successfully sent, 
+    then it will automatically download the response content and write into new 
+    file if the content type is HTML it will not combine with request history.
+    """
 
     # Default request headers.
     HEADERS = {
@@ -104,9 +111,9 @@ class Request( Readonly ):
                 headers = dict( headers )
         else:
             headers = {}
-        for header in Request.HEADERS.keys():
-            if header not in headers:
-                headers[header] = Request.HEADERS[header]
+        for header in Request.HEADERS.items():
+            if header[0] not in headers:
+                headers[header[0]] = header[1]
         for header in headers.keys():
             self.headers.update({ header: headers[header] })
         if cookies is not None:
@@ -121,7 +128,7 @@ class Request( Readonly ):
         if self.historyAllow:
             try:
                 self.__history__ = File.json( self.historyFname )
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 self.clean()
     
     #[Request.__error__( Exception error )]: Exception
@@ -183,8 +190,8 @@ class Request( Readonly ):
         """
         
         if  self.historyAllow is not True: return
-        if  self.response != False and \
-            self.response != None:
+        if  self.response is not False and \
+            self.response is not None:
             try:
                 content = self.response.json()
             except Exception:
@@ -227,7 +234,7 @@ class Request( Readonly ):
                         self.historyFormatHtml.format( parsed['path'], f"{time}" ).replace( "//", "/" ), 
                         self.response.content.decode( "utf-8" ) 
                     )
-        return( self )
+        return self
     
     #[Request.clean()]: Bool
     def clean( self ) -> bool:
@@ -246,23 +253,25 @@ class Request( Readonly ):
     @property
     def cookies( self ) -> Cookies: return self.__cookies__
 
-    #[Request.delete( String url, **kwargs )]: Response
+    #[Request.delete( Str url, **kwargs )]: Response
     @final
     def delete( self, url, **kwargs ) -> Response:
-        return( self.request( "DELETE", url=url, **kwargs ) )
+        return self.request( "DELETE", url=url, **kwargs )
 
-    #[Request.download( String url, String name, String fmode, **kwargs )]: Bool
-    def download( self, url, name, fmode="wb", **kwargs ):
+    #[Request.download( Str url, Str name, Str fmode, Str encoding, Any **kwargs )]: Bool
+    def download( self, url, name, fmode="wb", encoding="utf-8", **kwargs ):
         
         """
         Download content from url.
         
-        :params String url
+        :params Str url
             The target url of the content
-        :params String name
+        :params Str name
             Content/ Filename
-        :params String fmode
+        :params Str fmode
             File open mode
+        :params Str encoding
+            File encoding type
         :params Any **kwargs
             Request options
         
@@ -276,27 +285,25 @@ class Request( Readonly ):
         """
         
         try:
-            result = self.get( url )
+            result = self.get( url, **kwargs )
         except RequestError as e:
             raise e
-        if  result.status_code == 200:
+        if result.status_code == 200:
             try:
-                File.write( name, result.content, fmode )
-            except Exception as e:
+                return File.write( name, result.content, fmode )
+            except IOError as e:
                 raise RequestDownloadError( f"Failed write file \"{name}\"", prev=e )
-            return True 
-        else:
-            raise RequestDownloadError( f"Failed get content from url, status [{result.status_code}]" )
+        raise RequestDownloadError( f"Failed get content from url, status [{result.status_code}]" )
     
-    #[Request.get( String url, **kwargs )]: Response
+    #[Request.get( Str url, **kwargs )]: Response
     @final
     def get( self, url, **kwargs ) -> Response:
-        return( self.request( method="GET", url=url, **kwargs ) )
+        return self.request( method="GET", url=url, **kwargs )
     
-    #[Request.head( String url, **kwargs )]: Response
+    #[Request.head( Str url, **kwargs )]: Response
     @final
     def head( self, url, **kwargs ) -> Response:
-        return( self.request( method="HEAD", url=url, **kwargs ) )
+        return self.request( method="HEAD", url=url, **kwargs )
 
     #[Request.headers]: Headers => CaseInsensitiveDict
     @final
@@ -328,20 +335,20 @@ class Request( Readonly ):
     @property
     def historyFormatHtml( self ) -> str: return self.__historyFormatHtml__
 
-    #[Request.options( String url, **kwargs )]
+    #[Request.options( Str url, **kwargs )]
     @final
     def options( self, url, **kwargs ):
-        return( self.request( method="OPTIONS", url=url, **kwargs ) )
+        return self.request( method="OPTIONS", url=url, **kwargs )
     
-    #[Request.patch( String url, **kwargs )]: Response
+    #[Request.patch( Str url, **kwargs )]: Response
     @final
     def patch( self, url, **kwargs ) -> Response:
-        return( self.request( method="PATCH", url=url, **kwargs ) )
+        return self.request( method="PATCH", url=url, **kwargs )
     
-    #[Request.post( String url, **kwargs )]: Response
+    #[Request.post( Str url, **kwargs )]: Response
     @final
     def post( self, url, **kwargs ) -> Response:
-        return( self.request( method="POST", url=url, **kwargs ) )
+        return self.request( method="POST", url=url, **kwargs )
     
     #[Request.previous]: Response
     @final
@@ -354,7 +361,7 @@ class Request( Readonly ):
         """
         Return previous request responses based on given time.
         
-        :params String time
+        :params Str time
             Value must be like [0-9](s|m|h|d|w|M|y)
         
         :return List
@@ -393,21 +400,21 @@ class Request( Readonly ):
         else:
             raise TypeError( "Invalid time syntax, value must be like \\d+(s|m|h|d|w|M|y)" )
     
-    #[Request.put( String url, **kwargs )]: Response
+    #[Request.put( Str url, **kwargs )]: Response
     @final
     def put( self, url, **kwargs ) -> Response:
-        return( self.request( method="PUT", url=url, **kwargs ) )
+        return self.request( method="PUT", url=url, **kwargs )
     
-    #[Request.request( String method, String url, **kwargs )]: Response
+    #[Request.request( Str method, Str url, **kwargs )]: Response
     @final
     def request( self, method, url, **kwargs ) -> Response:
         
         """
         Send request to url target.
         
-        :params String method
+        :params Str method
             Request method name
-        :params String url
+        :params Str url
             Request url target
         :params Any **kwargs
             Request options
@@ -427,8 +434,8 @@ class Request( Readonly ):
         if "cookies" in kwargs:
             for cookie in list( kwargs['cookies'].keys() ):
                 kwargs['cookies'][cookie] = str( kwargs['cookies'][cookie] )
-        for cookie in self.cookies.keys():
-            Cookie.set( self.cookies, cookie, str( self.cookies[cookie] ) )
+        for cookie in self.cookies.items():
+            Cookie.set( self.cookies, cookie[0], str( cookie[1] ) )
         if "headers" in kwargs:
             for header in list( kwargs['headers'].keys() ):
                 kwargs['headers'][header] = str( kwargs['headers'][header] )
@@ -467,6 +474,10 @@ class Request( Readonly ):
 
 #[yutiriti.request.RequestRequired]
 class RequestRequired:
+
+    """
+    This class is only for handle when the class has required Request instance to run any functionality in the class
+    """
     
     #[RequestRequired( Request request )]: None
     def __init__( self, request ) -> None:
@@ -491,7 +502,7 @@ class RequestRequired:
         else:
             raise ValueError( "Parameter request must be type Request, {} passed".format( type( request ).__name__ ) )
     
-    #[RequestRequired.__setattr__( String name, Any value )]: None
+    #[RequestRequired.__setattr__( Str name, Any value )]: None
     @final
     def __setattr__( self, name, value ) -> None:
         if  name == "__request__":

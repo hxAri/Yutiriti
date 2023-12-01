@@ -20,9 +20,13 @@
 
 #[yutiriti.error.Throwable]
 class Throwable( Exception ):
+
+    """
+    ...
+    """
     
-    #[Throwable( String message, Int code, Context throw, BaseException prev, List group, Function|Method callback, **data )]: None
-    def __init__( self, message, code=0, throw=None, prev=None, group=[], callback=None, **data ) -> None:
+    #[Throwable( Str message, Int code, Object throw, BaseException prev, List group, Function|Method callback, Any **data )]: None
+    def __init__( self, message:str, code:int=0, throw:object=None, prev:BaseException=None, group:list[BaseException]=None, callback:callable=None, **data:any ) -> None:
         
         # Exception message.
         self.message = message
@@ -37,7 +41,7 @@ class Throwable( Exception ):
         self.prev = prev
         
         # Sxception groups.
-        self.group = group
+        self.group = group if isinstance( group, list ) else []
         
         # Exception callback.
         self.callback = callback

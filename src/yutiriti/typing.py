@@ -53,7 +53,8 @@ class Typing( Object ):
 
     #[Typing( Dict|List|Object data )]: None
     @final
-    def __init__( self, data:dict|Object={} ) -> None:
+    def __init__( self, data:dict|Object|None=None ) -> None:
+        data = data if data is not None else {}
         if not isinstance( data, ( dict, Object ) ):
             raise TypeError( "Invalid \"data\" parameter, value must be type Dict|Object, {} passed".format( typeof( data ) ) )
         parent = super()
@@ -84,15 +85,13 @@ class Typing( Object ):
                 if isinstance( properties[key], type ):
                     if isinstance( values[key], properties[key] ):
                         continue
-                    elif isinstance( values[key], ( dict, Object ) ):
+                    if isinstance( values[key], ( dict, Object ) ):
                         values[key] = properties[key]( values[key] )
                     elif isinstance( values[key], list ):
                         for i in range( len( values[key] ) ):
                             if isinstance( values[key][i], properties[key] ):
                                 continue
                             values[key][i] = properties[key]( values[key][i] )
-                        ...
-                    ...
                 elif isinstance( properties[key], ( dict, Object ) ):
                     if isinstance( properties[key], type ):
                         if isinstance( values[key], properties[key] ):
@@ -105,8 +104,6 @@ class Typing( Object ):
                                 continue
                             if isinstance( values[key][i], ( dict, Object ) ):
                                 values[key][i] = self.__mapper__( properties[key], values[key][i] )
-                        ...
-            ...
         return values
     
     #[Typing.__mapping__]: Dict|Object
@@ -122,15 +119,14 @@ class Typing( Object ):
     def __resolver__( self, value:any ) -> any:
         if isinstance( value, Readonly ):
             return value
-        elif isinstance( value, ( dict, list, Object ) ):
+        if isinstance( value, ( dict, list, Object ) ):
             if isinstance( value, ( dict, Object ) ):
                 indexs = list( value.keys() )
             else:
-                indexs = [ idx for idx in range( len( value ) ) ]
+                indexs = list( idx for idx in range( len( value ) ) )
             for index in indexs:
                 value[index] = self.__resolver__( value[index] )
-        elif isinstance( value, str ):
-            if match( r"^\d+$", value ):
-                value = int( value )
+        elif isinstance( value, str ) and match( r"^\d+$", value ) is not None:
+            value = int( value )
         return value
     

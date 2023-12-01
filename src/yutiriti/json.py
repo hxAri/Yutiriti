@@ -27,21 +27,25 @@ import yutiriti
 
 #[yutiriti.json.JSON]
 class JSON:
+
+    """
+    Json utility
+    """
     
-    #[Json.decode( Str string, Any *args, Any **kwargs )]
+    #[Json.decode( Str string, Any *args, Any **kwargs )]: Dict|List
     @staticmethod
-    def decode( string, *args, **kwargs ):
-        return( loads( string, *args, **kwargs ) )
+    def decode( string, *args, **kwargs ) -> dict|list:
+        return loads( string, *args, **kwargs )
         
-    #[Json.encode( Any values, Any *args, Any **kwargs )]
+    #[Json.encode( Any values, Any *args, Any **kwargs )]: Str
     @staticmethod
-    def encode( values, *args, **kwargs ):
+    def encode( values, *args, **kwargs ) -> str:
         kwargs['indent'] = kwargs.pop( "indent", 4 )
-        return( dumps( JSON.serializer( values ), *args, **kwargs ) )
+        return dumps( JSON.serializer( values ), *args, **kwargs )
         
-    #[Json.isSerializable( Any values )]
+    #[Json.isSerializable( Any values )]: Bool
     @staticmethod
-    def isSerializable( values ):
+    def isSerializable( values ) -> bool:
         
         """
         Return if value is serializable.
@@ -54,10 +58,10 @@ class JSON:
         try:
             JSON.encode( values )
         except OverflowError:
-            return( False )
+            return False
         except TypeError:
-            return( False )
-        return( True )
+            return False
+        return True
     
     @final
     @staticmethod
@@ -68,8 +72,8 @@ class JSON:
             for key in values.keys():
                 values[key] = JSON.serializer( values[key] )
         elif isinstance( values, list ):
-            for index in range( len( values ) ):
-                values[index] = JSON.serializer( values[index] )
+            for index, value in enumerate( values ):
+                values[index] = JSON.serializer( value )
         elif isinstance( values, datetime ):
             values = values.strftime( "%d-%m-%YT%H:%M:%S" )
         return values

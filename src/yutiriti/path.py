@@ -24,6 +24,10 @@ import shutil
 
 #[yutiriti.path.Path]
 class Path:
+
+    """
+    Path utility
+    """
     
     #[Path.is( Str dir )]: Bool
     @staticmethod
@@ -40,7 +44,7 @@ class Path:
             False otherwise
         """
         
-        return( os.path.isdir( dir ) )
+        return os.path.isdir( dir )
     
     #[Path.exists( Str dir )]: Bool
     @staticmethod
@@ -56,7 +60,7 @@ class Path:
             True if directory is exists
             False otherwise
         """
-        return( os.path.exists( dir ) )
+        return os.path.exists( dir )
     
     #[Path.mkdir( Str dir )]: None
     @staticmethod
@@ -82,7 +86,7 @@ class Path:
     
     #[Path.pwd()]: Str
     @staticmethod
-    def pwd() -> str: return( os.getcwd() )
+    def pwd() -> str: return os.getcwd()
 
     #[Path.rmdir( Str dir )]: None
     @staticmethod
