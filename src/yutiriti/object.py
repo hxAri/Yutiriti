@@ -24,6 +24,7 @@ from yutiriti.error import ReportError
 from yutiriti.readonly import Readonly
 from yutiriti.json import JSON
 from yutiriti.common import typeof
+from yutiriti.represent import Represent
 
 
 Key = TypeVar( "Key" )
@@ -218,62 +219,8 @@ class Object:
 
         :return Str
         """
-
-        #[Object.__repr__$.represent( Dict<Key, Value>|List<Value>|Object data, Int indent )]: Str
-        def represent( data:dict|list|Object, indent:int=4 ) -> str:
-
-            #[Object.__repr__$.represent$.normalize( Str string )]: Str
-            def normalize( string:str ) -> str:
-                return string \
-                    .replace( "\"", "\\\"" ) \
-                    .replace( "\n", "\\n" ) \
-                    .replace( "\t", "\\t" )
-
-            #[Object.__repr__$.represent$.wrapper( Dict<Key, Value>|List<Value>|Object data, Int indent )]: Str
-            def wrapper( data:dict|list|Object, indent:int=4 ) -> str:
-                values = []
-                length = len( data )
-                spaces = "\x20" * indent
-                if isinstance( data, ( dict, Object ) ):
-                    define = "\"{}\""
-                    indexs = data.keys()
-                else:
-                    define = "[{}]"
-                    indexs = list( idx for idx in range( length ) )
-                for index in indexs:
-                    key = define.format( index )
-                    value = data[index]
-                    if isinstance( value, ( dict, Object ) ):
-                        if len( value ) >= 1:
-                            values.append( "{}: {}".format( key, represent( value, indent +4 ) ) )
-                        else:
-                            values.append( "{}: {}(\n{})".format( key, typeof( value ), spaces ) )
-                    elif isinstance( value, list ):
-                        length = len( value )
-                        lspace = indent + 4
-                        lspace = "\x20" * lspace
-                        if length >= 1:
-                            array = []
-                            for i in range( length ):
-                                if isinstance( value[i], ( dict, list, Object ) ):
-                                    array.append( "[{}]: {}".format( i, represent( value[i], indent +8 ) ) )
-                                else:
-                                    if isinstance( value[i], str ):
-                                        value[i] = f"\"{normalize(value[i])}\""
-                                    array.append( "[{}]: {}({})".format( i, typeof( value[i] ), value[i] ) )
-                            values.append( "{0}: {1}(\n{2}{4}\n{3})".format( key, typeof( value ), lspace, spaces, f",\n{lspace}".join( array ) ) )
-                        else:
-                            values.append( "{0}: {1}(\n{2})".format( key, typeof( value ), spaces ) )
-                    else:
-                        if isinstance( value, str ):
-                            value = f"\"{normalize(value)}\""
-                        values.append( "{}: {}({})".format( key, typeof( value ), value ) )
-                return f",\n{spaces}".join( values )
-            if len( data ) >= 1:
-                return "{}(\n{}{}\n{})".format( typeof( data ), "\x20" * indent, wrapper( data, indent=indent ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
-            return "{}(\n{})".format( typeof( data ), "\x20" * ( 0 if indent == 4 else indent -4 ) )
         
-        return represent( self, indent=4 )
+        return Represent.convert( self, indent=4 )
     
     #[Object.__set__( Dict<Key, Value>|Object data )]: None
     @final
@@ -317,9 +264,9 @@ class Object:
                     else:
                         value = Object( value )
                 elif isinstance( value, list ):
-                    for i in range( len( value ) ):
-                        if isinstance( value[i], dict ):
-                            value[i] = Object( value[i] )
+                    for i, v in enumerate( value ):
+                        if isinstance( v, dict ):
+                            value[i] = Object( v )
                 if key in self.__dict__:
                     if key == "__except__":
                         if isinstance( value, list ):
@@ -429,3 +376,4 @@ class Object:
     #[Object.set( Dict<Key, Value>|Object data )]: None
     @final
     def set( self, data:dict|Object ) -> None: self.__set__( data )
+    

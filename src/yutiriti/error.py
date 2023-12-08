@@ -21,9 +21,7 @@
 #[yutiriti.error.Throwable]
 class Throwable( Exception ):
 
-    """
-    ...
-    """
+    """ A base exception for Identify if raised exception is from Yutiriti """
     
     #[Throwable( Str message, Int code, Object throw, BaseException prev, List group, Function|Method callback, Any **data )]: None
     def __init__( self, message:str, code:int=0, throw:object=None, prev:BaseException=None, group:list[BaseException]=None, callback:callable=None, **data:any ) -> None:
@@ -54,22 +52,36 @@ class Throwable( Exception ):
     
 
 #[yutiriti.error.Alert]
-class Alert( Throwable, Warning ): ...
+class Alert( Throwable, Warning ):
+    
+    """ ... """
 
 #[yutiriti.erorr.Error]
-class Error( Throwable, RuntimeError ): ...
+class Error( Throwable, RuntimeError ):
+    
+    """ ... """
 
 #[yutiriti.error.AuthError]
-class AuthError( Error ): ...
+class AuthError( Error ):
+    
+    """ ... """
 
 #[yutiriti.error.RequestError]
-class RequestError( Error ): ...
+class RequestError( Error ):
+    
+    """ ... """
 
 #[yutiriti.error.RequestAuthError]
-class RequestAuthError( AuthError ): ...
+class RequestAuthError( AuthError ):
+    
+    """ ... """
 
 #[yutiriti.error.RequestDownloadError]
-class RequestDownloadError( RequestError ): ...
+class RequestDownloadError( RequestError ):
+    
+    """ ... """
 
 #[yutiriti.error.ReportError]
-class ReportError( Error ): ...
+class ReportError( Error ):
+    
+    """ ... """

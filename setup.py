@@ -29,7 +29,7 @@ def reader( fname:str ) -> str:
         fopen.close()
     return fread
 
-
+# Setup Tool
 setup(
     name="yutiriti",
     version="1.0.0",

@@ -326,10 +326,23 @@ class Yutiriti:
             Return Str if successully input password
         """
 
-        if label:
-            place = "\x7b\x7d\x2e\x67\x65\x74\x70\x61\x73\x73\x3a\x20".format( type( self ).__name__ )
+        if label is None:
+            label = self.getpass
+        if isinstance( label, type ):
+            place = "\x7b\x7d\x2e\x69\x6e\x70\x75\x74\x3a\x20".format( typeof( self ) )
         else:
-            place = "\x7b\x7d\x3a\x20".format( label )
+            if not isinstance( label, str ):
+                if callable( label ):
+                    if typeof( label ) == "method":
+                        label = ".".join([ typeof( label.__self__ ), label.__name__ ])
+                    else:
+                        label = label.__name__.capitalize()
+                else:
+                    label = typeof( label )
+            if label != "<<<" and label != ">>>" and not label.endswith( "[Y/n]" ):
+                place = "\x7b\x7d\x3a\x20".format( label.strip() )
+            else:
+                place = "\x7b\x7d\x20".format( label.strip() )
         try:
             value = getpass( self.colorize( place ) )
             if value == "":
@@ -362,16 +375,19 @@ class Yutiriti:
         :return Int|Str
         """
 
-        if label:
-            place = "\x7b\x7d\x2e\x69\x6e\x70\x75\x74\x3a\x20".format( type( self ).__name__ )
+        if label is None:
+            label = self.input
+        if isinstance( label, type ):
+            place = "\x7b\x7d\x2e\x69\x6e\x70\x75\x74\x3a\x20".format( typeof( self ) )
         else:
             if not isinstance( label, str ):
-                typed = typeof( label )
-                if typed in [ "function", "method" ]:
-                    label = label.__name__
-                    label = label.capitalize()
+                if callable( label ):
+                    if typeof( label ) == "method":
+                        label = ".".join([ typeof( label.__self__ ), label.__name__ ])
+                    else:
+                        label = label.__name__.capitalize()
                 else:
-                    label = typed
+                    label = typeof( label )
             if label != "<<<" and label != ">>>" and not label.endswith( "[Y/n]" ):
                 place = "\x7b\x7d\x3a\x20".format( label.strip() )
             else:
@@ -657,3 +673,4 @@ def puts( *values:any, base:str="\x1b[0m", end:str="\x0a", sep:str="\x20" ) -> N
     """
 
     print( *[ Yutiriti.colorize( self=puts, base=base, string=value if isinstance( value, str ) else repr( value ) ) for value in values ], end=end, sep=sep )
+    

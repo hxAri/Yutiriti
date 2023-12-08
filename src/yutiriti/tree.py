@@ -18,6 +18,9 @@
 #
 
 
+from yutiriti.text import Text
+
+
 ITP = "\u00b7"
 STR_LINE = "\u2502\x20\x20\x20"
 MID_LINE = "\u251c\u2500\u2500\x20"
@@ -54,7 +57,7 @@ def looping( data:dict|list|set|tuple, indent:int, space:str, capitalize:bool=Fa
                     result += normalize( keyset, capitalize=capitalize )
                     result += "\x0a"
                     if isinstance( value, ( dict, list, set, tuple ) ):
-                        result += builder( data=value, indent=indent, space=space + STR_LINE )
+                        result += builder( data=value, indent=indent, space=space + STR_LINE, capitalize=capitalize )
                     else:
                         result += space
                         result += STR_LINE
@@ -196,7 +199,7 @@ def normalize( keyset:str, capitalize:bool=False ) -> str:
     """ Normalize sey set of value """
 
     keyset = str( keyset )
-    return keyset.capitalize() if capitalize else keyset
+    return Text.fromSnakeToTitle( keyset ) if capitalize else keyset
 
 
 #[yutiriti.tree( Any data, Int indent, Bool capitalize )]: Str

@@ -130,6 +130,8 @@ class Request( Readonly ):
                 self.__history__ = File.json( self.historyFname )
             except FileNotFoundError:
                 self.clean()
+        self.parent = super()
+        self.parent.__init__( self )
     
     #[Request.__error__( Exception error )]: Exception
     @final
@@ -219,7 +221,7 @@ class Request( Readonly ):
                     "headers": dict( self.headers ),
                     "method": self.response.request.method,
                     "query": query,
-                    "body": self.response.request.body
+                    "body": self.response.request.body if self.response.request.body is None or isinstance( self.response.request.body, str ) else str( self.response.request.body, encoding="UTF-8" )
                 },
                 "response": {
                     "status": f"{self.response}",

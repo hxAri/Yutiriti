@@ -19,7 +19,7 @@
 
 clear
 
-if [[ -f /usr/bin/pip || -d /sdcard ]]; then
+if [[ -f /usr/bin/pip || -f /usr/local/bin/pip ]]; then
 	installed=$( pip list | grep yutiriti )
 	if [[ $installed != "" ]]; then
 		pip uninstall yutiriti -y
