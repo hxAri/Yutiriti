@@ -130,8 +130,6 @@ class Request( Readonly ):
                 self.__history__ = File.json( self.historyFname )
             except FileNotFoundError:
                 self.clean()
-        self.parent = super()
-        self.parent.__init__( self )
     
     #[Request.__error__( Exception error )]: Exception
     @final
