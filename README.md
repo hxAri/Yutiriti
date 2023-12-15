@@ -122,6 +122,9 @@ puts( "Hello World!", end="\n" )
 ```
 #### yutiriti.readonly.Readonly
 #### yutiriti.request.Request
+```py
+from yutiriti.request import Request
+```
 #### yutiriti.string.String
 #### yutiriti.thread.Thread
 Make it easy to catch exceptions and also return values for functions executed via Thread, this is also a derivative of python's built-in Thread, just a few touches away.
