@@ -28,9 +28,7 @@ import yutiriti
 #[yutiriti.json.JSON]
 class JSON:
 
-    """
-    Json utility
-    """
+    """ Json utility """
     
     #[Json.decode( Str string, Any *args, Any **kwargs )]: Dict|List
     @staticmethod

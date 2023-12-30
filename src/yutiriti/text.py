@@ -25,6 +25,8 @@ from typing import final
 @final
 class Text:
 
+    """ ... """
+
     #[Text.fromSnakeToCamel( Str string )]: Str
     @staticmethod
     def fromSnakeToCamel( string:str ) -> str:

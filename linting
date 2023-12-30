@@ -15,11 +15,12 @@ pylint \
 	--function-naming-style=camelCase \
 	--max-attributes=30 \
 	--method-naming-style=camelCase \
-	--good-names="e,i,id,u" \
+	--good-names="e,i,id,u,v,k" \
 	--ignore-docstrings=y \
 	--ignore-long-lines="[^\\n]+" \
 	--indent-string="    " \
 	--disable=broad-exception-caught \
+	--disable=cyclic-import \
 	--disable=consider-using-f-string \
 	--disable=function-redefined \
 	--disable=keyword-arg-before-vararg \
@@ -39,6 +40,7 @@ pylint \
 	--disable=trailing-newlines \
 	--disable=trailing-whitespace \
 	--disable=unnecessary-dunder-call \
+	--disable=unnecessary-ellipsis \
 	--disable=unnecessary-pass \
 	--disable=unexpected-special-method-signature \
 	src/yutiriti/*.py

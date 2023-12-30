@@ -25,9 +25,7 @@ import shutil
 #[yutiriti.path.Path]
 class Path:
 
-    """
-    Path utility
-    """
+    """ Path utility """
     
     #[Path.is( Str dir )]: Bool
     @staticmethod

@@ -35,9 +35,7 @@ ObjectBuilder = TypeVar( "ObjectBuilder" )
 #[yutiriti.object.Object]
 class Object:
 
-    """
-    A python Object utility to transform any dictionary structure into Object
-    """
+    """ A python Object utility to transform any dictionary structure into Object """
     
     #[Object( Dict|Object data )]: None
     def __init__( self, data:dict|Object|None=None ) -> None:
@@ -259,7 +257,7 @@ class Object:
                 value = data[key]
                 if isinstance( value, dict ):
                     define = typeof( self )
-                    if define != "Object" and define != "ObjectBuilder":
+                    if define not in [ "Object", "ObjectBuilder" ]:
                         value = Object.__builder__( type( self ), value )
                     else:
                         value = Object( value )
@@ -276,8 +274,7 @@ class Object:
                                         raise TypeError( f"Cannot override attribute \"{key}\", cannot override attribute that has been set in a class that extends the Readonly class" )
                                     self.__dict__['__except__'] = excepts
                                     break
-                                else:
-                                    self.__dict__['__except__'].append( val )
+                                self.__dict__['__except__'].append( val )
                             excepts = self.__dict__['__except__']
                             continue
                     if key not in excepts:
@@ -305,9 +302,7 @@ class Object:
             raise ReportError( "Functionality for set multiple value on class {} is deprecated".format( typeof( self ) ) )
         elif isinstance( data, Object ):
             for key in data.__keys__():
-                self.__set__({
-                    key: data[key]
-                })
+                self.__set__({ key: data[key] })
             ...
         else:
             raise ValueError( "Invalid \"data\" parameter, value must be type Dict|List|Object, {} passed".format( typeof( data ) ) )
@@ -352,7 +347,7 @@ class Object:
     
     #[Object.idxs()]: List<Int>
     @final
-    def idxs( self ) -> list[int]: return [ idx for idx in range( len( self ) ) ]
+    def idxs( self ) -> list[int]: return list( idx for idx in range( len( self ) ) )
     
     #[Object.json( Any *args, Any **kwargs )]: Str
     @final

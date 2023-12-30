@@ -28,9 +28,7 @@ from yutiriti.string import String
 #[yutiriti.utililty.cookie.Cookie]
 class Cookie:
 
-    """
-    Cookie setter
-    """
+    """ Cookie utility """
     
     #[Cookie.parse( Str raw )]: List<Dict<Str, Any>>
     @staticmethod

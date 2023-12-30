@@ -35,9 +35,7 @@ from yutiriti.common import typeof
 #[yutiriti.Yutiriti]
 class Yutiriti:
 
-    """
-    An object utility
-    """
+    """ An object utility """
 
     #[Yutiriti.banner]: Str
     @property

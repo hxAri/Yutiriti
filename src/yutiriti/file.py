@@ -27,9 +27,7 @@ from yutiriti.path import Path
 #[yutiriti.file.File]
 class File:
 
-    """
-    File utility
-    """
+    """ File utility """
     
     #[File.json( Str fname )]: Dict|List
     @staticmethod

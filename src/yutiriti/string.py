@@ -27,6 +27,8 @@ from string import ascii_lowercase as ASCIIL, ascii_uppercase as ASCIIU
 
 #[yutiriti.string.Binary]
 class Binary:
+
+    """ ... """
     
     #[Binary.bin2hex( String bin )]: String
     @staticmethod
@@ -67,6 +69,8 @@ class Binary:
 #[yutiriti.string.String]
 class String( Binary ):
     
+    """ String utility """
+    
     #[String.encode( String text, String encode )]: String
     @staticmethod
     def encode( text, encode="ascii" ):
@@ -80,6 +84,7 @@ class String( Binary ):
         return str( b64decode( bytes( String.hex2bin( enc ), "utf-8" ) ), "utf-8" )
     
     #[String.random( Int length )]: String
+    @staticmethod
     def random( length=32 ):
         
         """

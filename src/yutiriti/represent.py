@@ -26,10 +26,21 @@ from yutiriti.common import typeof
 #[yutiriti.represent.Represent]
 @final
 class Represent:
+
+    """ Represent object """
     
     #[Represent.normalize( Str string )]: Str
     @staticmethod
     def normalize( string:str ) -> str:
+
+        """
+        Normalize Escaped characters
+        
+        :params Str string
+        
+        :return Str
+        """
+
         return string \
             .replace( "\"", "\\\"" ) \
             .replace( "\n", "\\n" ) \
@@ -38,6 +49,16 @@ class Represent:
     #[Represent.wrapper( Dict<Key, Value>|List<Value>|Object data, Int indent )]: Str
     @staticmethod
     def wrapper( data:dict|list|object, indent:int=4 ) -> str:
+
+        """
+        Object wrapper
+
+        :params Dict<Str, Any>|List<Any>|Object data
+        :params Int indent
+
+        :return Str
+        """
+
         values = []
         length = len( data )
         spaces = "\x20" * indent
@@ -82,6 +103,12 @@ class Represent:
     def convert( data:dict|list|object, indent:int=4 ) -> str:
         
         """
+        Convert object into string
+
+        :params Dict<Str, Any>|List<Any>|Object data
+        :params Int indent
+
+        :return Str
         """
         
         if len( data ) >= 1:

@@ -290,7 +290,7 @@ class Request( Readonly ):
             raise e
         if result.status_code == 200:
             try:
-                return File.write( name, result.content, fmode )
+                return File.write( name, result.content, fmode, encoding )
             except IOError as e:
                 raise RequestDownloadError( f"Failed write file \"{name}\"", prev=e )
         raise RequestDownloadError( f"Failed get content from url, status [{result.status_code}]" )
@@ -397,8 +397,7 @@ class Request( Readonly ):
                 if  timestamp >= current - delta:
                     data.append( history )
             return data
-        else:
-            raise TypeError( "Invalid time syntax, value must be like \\d+(s|m|h|d|w|M|y)" )
+        raise TypeError( "Invalid time syntax, value must be like \\d+(s|m|h|d|w|M|y)" )
     
     #[Request.put( Str url, **kwargs )]: Response
     @final

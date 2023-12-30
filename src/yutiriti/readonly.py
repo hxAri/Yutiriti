@@ -43,11 +43,12 @@ class Readonly:
             if "__except__" in self.__dict__:
                 if isinstance( self.__dict__['__except__'], list ):
                     for keyword in self.__dict__['__except__']:
-                        if keyword in excepts: continue
+                        if keyword in excepts:
+                            continue
                         if not isinstance( keyword, str ):
-                            excepts = []; break
-                        else:
-                            excepts.append( keyword )
+                            excepts = []
+                            break
+                        excepts.append( keyword )
             if name == "__except__":
                 if isinstance( value, list ):
                     allows = True

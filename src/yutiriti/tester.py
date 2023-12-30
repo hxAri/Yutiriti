@@ -35,18 +35,15 @@ Self = TypeVar( "Self" )
 @final
 class Tester( Readonly ):
 
-    """
-    """
+    """ ... """
     
     #[Tester()]: None
-    def __init__( self:Self ) -> None:
-        ...
+    def __init__( self:Self ) -> None: ...
 
     #[Tester.testing( Self@Tester )]: None
-    def testing( self:Self=None ) -> None:
+    def testing( bind:Self=None ) -> None:
 
-        """
-        """
+        """ ... """
 
         def callback( value:any ) -> None:
             parts = split( r"\x0a", value if isinstance( value, str ) else repr( value ) )
@@ -54,30 +51,30 @@ class Tester( Readonly ):
                 parts[0] += "\x20" *20
             puts( "\r\x7b\x7d\x7b\x7d".format( "\x20" *6, "\x0a\x7b\x7d".format( "\x20" *6 ).join( parts ), end="\x0a" + ( "\x20" *5 ) ) )
 
-        if self is None:
-            self = Tester()
+        if bind is None:
+            bind = Tester()
 
         count = 1
         passed = []
         yutiriti = Yutiriti()
         yutiriti.output( Tester.testing, "Testing" )
-        instance = type( self )
+        instance = type( bind )
         methods = instance.__dict__
         for method in list( methods.keys() ):
             string = yutiriti.colorize( "{}Testing case {}".format( "\x20" * 6, count ) )
             if methods[method] is Tester.testing:
                 continue
-            elif not callable( methods[method] ):
+            if not callable( methods[method] ):
                 continue
-            else:
-                puts( "{}@{}".format( "\x20" *4, method ) )
-                for part in string:
-                    stdout.write( part )
-                    stdout.flush()
-                    if part != "\x20":
-                        sleep( 00000.1 )
+            puts( "{}@{}".format( "\x20" *4, method ) )
+            for part in string:
+                stdout.write( part )
+                stdout.flush()
+                if part != "\x20":
+                    sleep( 00000.1 )
             try:
-                thread = Thread( target=lambda: methods[method]( callback ) )
+                task = methods[method]
+                thread = Thread( target=lambda: task( callback ) )
                 thread.start()
                 while thread.is_alive():
                     for u in "\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x5c\x7c\x2f\x2d\x20":
